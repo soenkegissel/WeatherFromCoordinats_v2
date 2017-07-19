@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">WeatherToCoordinats</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="appid">9f39aeac50811bd3d3aab27cb635f4c8</string>
+    <string name="BaseUrl">http://api.openweathermap.org</string>
+    <string name="MapsApiKey">AIzaSyC1Yf65opdj0C82EarUYP94z3gBuP5F1dE</string>
+    <string name="ServiceUnreachable">Weather service unreahable, please check your connection</string>
+    <string name="WhereIsIt">Where is it:</string>
+    <string name="Weather">Weather in generally:</string>
+    <string name="Temperature">Temperature:</string>
+    <string name="pressure">Atmosphere pressure: </string>
+    <string name="humidity">Humidity: </string>
+    <string name="Nord">Northern</string>
+    <string name="NordEast">Northeastern</string>
+    <string name="East">Eastern</string>
+    <string name="SouthEast">Southeastern</string>
+    <string name="South">Southen</string>
+    <string name="SouthWest">Southwestern</string>
+    <string name="West">Western</string>
+    <string name="NordWest">Northwestern</string>
+    <string name="Wind">Wind: </string>
+    <string name="UnknownCoordinats">Unknown location</string>
+    <string name="WeatherHereAtThisTime">Weather here in this moment:</string>
+</resources>
