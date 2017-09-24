@@ -4,14 +4,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.BottomSheetBehavior;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
 import com.example.maks2.weathertocoordinats.managers.NetworkManager;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
@@ -32,7 +33,6 @@ public class MapsActivity extends AppCompatActivity
 
     private GoogleMap mMap;
     private Handler handler;
-    private LinearLayout buttomSheet;
     private BottomSheetBehavior bottomSheetBehavior;
     private TextView locationText;
     private TextView generalWeatherText;
@@ -42,14 +42,14 @@ public class MapsActivity extends AppCompatActivity
     private TextView windText;
     private ImageView weatherImage;
     private WeatherModel weatherModel;
-
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        buttomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(buttomSheet);
+        LinearLayout bottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager()
@@ -63,12 +63,15 @@ public class MapsActivity extends AppCompatActivity
         pressureText = (TextView) findViewById(R.id.pressureview);
         windText = (TextView) findViewById(R.id.windview);
         weatherImage = (ImageView) findViewById(R.id.iconWeather);
+        fab=(FloatingActionButton)findViewById(R.id.fab);
+        fab.setOnClickListener(view -> fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_black_24dp)));
+
     }
 
     @Override
     public void onMapClick(LatLng latLng) {
-        String[] coordinats = getCoordinats(latLng);
-        getWeather(coordinats[0], coordinats[1]);
+        String[] coordinates = getCoordinates(latLng);
+        getWeather(coordinates[0], coordinates[1]);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
@@ -80,9 +83,9 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-    public String[] getCoordinats(LatLng latLng) {
-        String lat = new String();
-        String lng = new String();
+    public String[] getCoordinates(LatLng latLng) {
+        String lat = "";
+        String lng = "";
         char chack;
         final List<WeatherModel> weatherModels = new ArrayList<>();
 
@@ -104,7 +107,7 @@ public class MapsActivity extends AppCompatActivity
                 .subscribe(new Subscriber<WeatherModel>() {
                     @Override
                     public void onCompleted() {
-                        formateResult(weatherModel);
+                        formatResult(weatherModel);
                         mMap.clear();
                     }
 
@@ -115,13 +118,13 @@ public class MapsActivity extends AppCompatActivity
 
                     @Override
                     public void onNext(WeatherModel weatherModelData) {
-                    weatherModel=weatherModelData;
+                        weatherModel = weatherModelData;
                     }
                 });
     }
 
-    public String formateResult(WeatherModel weatherModel) {
-        String result = new String();
+    public String formatResult(WeatherModel weatherModel) {
+        String result = "";
         handler = new Handler(Looper.getMainLooper());
         double temp, pressure, humidity, windspeed, winddeg;
         Log.e(" ", weatherModel.getName());
@@ -174,11 +177,11 @@ public class MapsActivity extends AppCompatActivity
             }
 
             generalWeatherText.setText(getString(R.string.Weather) + weatherModel.getWeather().get(0).getDescription());
-            temp = new Double(weatherModel.getMain().getTemp());
-            pressure = new Double(weatherModel.getMain().getPressure());
-            humidity = new Double(weatherModel.getMain().getHumidity());
-            windspeed = new Double(weatherModel.getWind().getSpeed());
-            winddeg = new Double(weatherModel.getWind().getDeg());
+            temp = weatherModel.getMain().getTemp();
+            pressure = weatherModel.getMain().getPressure();
+            humidity = weatherModel.getMain().getHumidity();
+            windspeed = weatherModel.getWind().getSpeed();
+            winddeg = weatherModel.getWind().getDeg();
             temp = (temp - 273);
 
             temperatureText.setText(getString(R.string.Temperature) + Math.round(temp) + " C" + "\n");

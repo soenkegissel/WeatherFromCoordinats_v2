@@ -14,8 +14,4 @@ public class Rain {
         return _3h;
     }
 
-    public void set3h(Double _3h) {
-        this._3h = _3h;
-    }
-
 }

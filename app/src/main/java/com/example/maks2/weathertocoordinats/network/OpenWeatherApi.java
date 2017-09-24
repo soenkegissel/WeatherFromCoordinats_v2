@@ -11,7 +11,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 /**
- * Created by fluffy on 10.07.17.
+ * Sorry for this code from Railian Maksym (10.07.17).
  */
 
 public interface OpenWeatherApi {

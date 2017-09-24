@@ -9,26 +9,25 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by fluffy on 10.07.17.
+ * Sorry for this code from Railian Maksym (10.07.17).
  */
 
 public class MyApplication extends Application {
-   private Retrofit retrofit;
     private static OpenWeatherApi openWeatherApi;
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-        retrofit= new Retrofit.Builder()
+        final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(getString(R.string.BaseUrl))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        openWeatherApi=retrofit.create(OpenWeatherApi.class);
+        openWeatherApi = retrofit.create(OpenWeatherApi.class);
     }
 
-    public static OpenWeatherApi getApi(){
+    public static OpenWeatherApi getApi() {
         return openWeatherApi;
     }
 }

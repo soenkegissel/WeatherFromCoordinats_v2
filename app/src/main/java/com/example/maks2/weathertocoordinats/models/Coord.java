@@ -4,7 +4,7 @@ package com.example.maks2.weathertocoordinats.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Coord {
+class Coord {
 
     @SerializedName("lon")
     @Expose
@@ -17,15 +17,8 @@ public class Coord {
         return lon;
     }
 
-    public void setLon(Double lon) {
-        this.lon = lon;
-    }
-
     public Double getLat() {
         return lat;
     }
 
-    public void setLat(Double lat) {
-        this.lat = lat;
-    }
 }
