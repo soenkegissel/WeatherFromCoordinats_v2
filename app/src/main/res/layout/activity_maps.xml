@@ -10,7 +10,7 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.maks2.weathertocoordinats.MapsActivity"
+    tools:context="com.example.maks2.weathertocoordinats.ui.activities.MapsActivity"
     />
     <android.support.design.widget.FloatingActionButton
         android:layout_width="56dp"

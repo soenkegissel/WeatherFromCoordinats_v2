@@ -1,64 +1,47 @@
-package com.example.maks2.weathertocoordinats;
+package com.example.maks2.weathertocoordinats.ui.activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.maks2.weathertocoordinats.MyApplication;
+import com.example.maks2.weathertocoordinats.R;
+import com.example.maks2.weathertocoordinats.managers.NetworkManager;
+import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class MapsActivity extends AppCompatActivity
         implements GoogleMap.OnMapClickListener, OnMapReadyCallback {
 
     private GoogleMap mMap;
-    Handler handler;
-    LinearLayout buttomSheet;
-    BottomSheetBehavior bottomSheetBehavior;
-    TextView locationText;
-    TextView generalWeatherText;
-    TextView temperatureText;
-    TextView humidityText;
-    TextView pressureText;
-    TextView windText;
-    ImageView weatherImage;
+    private Handler handler;
+    private LinearLayout buttomSheet;
+    private BottomSheetBehavior bottomSheetBehavior;
+    private TextView locationText;
+    private TextView generalWeatherText;
+    private TextView temperatureText;
+    private TextView humidityText;
+    private TextView pressureText;
+    private TextView windText;
+    private ImageView weatherImage;
+    private WeatherModel weatherModel;
 
 
     @Override
@@ -73,13 +56,13 @@ public class MapsActivity extends AppCompatActivity
                         .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        locationText=(TextView) findViewById(R.id.weatherLocation);
-        generalWeatherText=(TextView) findViewById(R.id.weatherGeneral);
-        temperatureText=(TextView)findViewById(R.id.temperatureView);
-        humidityText=(TextView)findViewById(R.id.humidityview);
-        pressureText=(TextView)findViewById(R.id.pressureview);
-        windText=(TextView)findViewById(R.id.windview);
-        weatherImage=(ImageView)findViewById(R.id.iconWeather);
+        locationText = (TextView) findViewById(R.id.weatherLocation);
+        generalWeatherText = (TextView) findViewById(R.id.weatherGeneral);
+        temperatureText = (TextView) findViewById(R.id.temperatureView);
+        humidityText = (TextView) findViewById(R.id.humidityview);
+        pressureText = (TextView) findViewById(R.id.pressureview);
+        windText = (TextView) findViewById(R.id.windview);
+        weatherImage = (ImageView) findViewById(R.id.iconWeather);
     }
 
     @Override
@@ -116,27 +99,25 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void getWeather(String lat, String lng) {
+        NetworkManager.getWeather(lat, lng, getString(R.string.appid))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<WeatherModel>() {
+                    @Override
+                    public void onCompleted() {
+                        formateResult(weatherModel);
+                        mMap.clear();
+                    }
 
-        MyApplication.getApi().getData(lat, lng, getString(R.string.appid))
-                .enqueue(new retrofit2.Callback<WeatherModel>() {
-            @Override
-            public void onResponse(retrofit2.Call<WeatherModel> call, retrofit2.Response<WeatherModel> response) {
-                WeatherModel weatherModel = new WeatherModel();
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(MapsActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
 
-                if (response.body() == null) {
-                    Log.e("PARSE ERROR", "RESPONSE IS EMPTY");
-                } else
-                    weatherModel = response.body();
-                formateResult(weatherModel);
-                mMap.clear();
-            }
-
-            @Override
-            public void onFailure(retrofit2.Call<WeatherModel> call, Throwable t) {
-                Log.e("CONNECTION ERROR ", "REQUEST IS FAIL ", t);
-
-            }
-        });
+                    @Override
+                    public void onNext(WeatherModel weatherModelData) {
+                    weatherModel=weatherModelData;
+                    }
+                });
     }
 
     public String formateResult(WeatherModel weatherModel) {
@@ -145,50 +126,49 @@ public class MapsActivity extends AppCompatActivity
         double temp, pressure, humidity, windspeed, winddeg;
         Log.e(" ", weatherModel.getName());
 
-        Toast toast=Toast.makeText(this,getString(R.string.ServiceUnreachable),Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(this, getString(R.string.ServiceUnreachable), Toast.LENGTH_SHORT);
         if (weatherModel == null) toast.show();
         else {
             if (weatherModel.getSys().getCountry() == null) {
                 locationText.setText(getString(R.string.WhereIsIt) + " "
                         + getString(R.string.UnknownCoordinats));
-            }
-            else {
-                locationText.setText(getString(R.string.WhereIsIt) + " "+
-                        weatherModel.getName()+", "
+            } else {
+                locationText.setText(getString(R.string.WhereIsIt) + " " +
+                        weatherModel.getName() + ", "
                         + weatherModel.getSys().getCountry());
             }
 
-            Picasso picasso=new Picasso.Builder(this).build();
-            if(weatherModel.getWeather().get(0).getIcon().isEmpty()){
+            Picasso picasso = new Picasso.Builder(this).build();
+            if (weatherModel.getWeather().get(0).getIcon().isEmpty()) {
                 picasso.load(R.drawable.weather_none_available).into(weatherImage);
-            }else {
-                String icon =weatherModel.getWeather().get(0).getIcon();
-                switch (icon){
+            } else {
+                String icon = weatherModel.getWeather().get(0).getIcon();
+                switch (icon) {
                     case "01d":
                         picasso.load(R.drawable.weather_clear).into(weatherImage);
-                            break;
+                        break;
                     case "03d":
                         picasso.load(R.drawable.weather_few_clouds).into(weatherImage);
-                            break;
+                        break;
                     case "04d":
                         picasso.load(R.drawable.weather_clouds).into(weatherImage);
-                            break;
+                        break;
                     case "09d":
                         picasso.load(R.drawable.weather_snow_rain).into(weatherImage);
-                            break;
+                        break;
                     case "10d":
 
                         picasso.load(R.drawable.weather_rain_day).into(weatherImage);
-                            break;
+                        break;
                     case "11d":
                         picasso.load(R.drawable.weather_storm).into(weatherImage);
-                            break;
+                        break;
                     case "13d":
                         picasso.load(R.drawable.weather_snow).into(weatherImage);
-                            break;
+                        break;
                     case "50d":
                         picasso.load(R.drawable.weather_mist).into(weatherImage);
-                            break;
+                        break;
 
                 }
             }
@@ -203,9 +183,9 @@ public class MapsActivity extends AppCompatActivity
 
             temperatureText.setText(getString(R.string.Temperature) + Math.round(temp) + " C" + "\n");
             pressure = pressure * 0.75006375541921;
-            pressureText.setText(getString(R.string.pressure) +" "+ Math.round(pressure) + " Millimeters of mercury");
+            pressureText.setText(getString(R.string.pressure) + " " + Math.round(pressure) + " Millimeters of mercury");
 
-            humidityText.setText(getString(R.string.humidity) +" "+ humidity + "%" + "\n");
+            humidityText.setText(getString(R.string.humidity) + " " + humidity + "%" + "\n");
             String wind;
             if (winddeg <= 20 && winddeg >= 340) wind = getString(R.string.Nord);
             else if (winddeg <= 80 && winddeg >= 21)
