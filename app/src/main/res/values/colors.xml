@@ -4,8 +4,13 @@
     <color name="colorPrimaryDark">#FFA000</color>
     <color name="colorPrimaryLight">#FFECB3</color>
     <color name="colorAccent">#9E9E9E</color>
-    <color name="primary_text">#212121</color>
+    <color name="primary_text">#1D1F24</color>
     <color name="secondary_text">#757575</color>
-    <color name="icons">#212121</color>
+    <color name="icons">#1D1F24</color>
     <color name="divider">#BDBDBD</color>
+    <color name="snowBackground">#FAFAFA</color>
+    <color name="rainBackground">#607D8B</color>
+    <color name="sunnyBackground">#457AD1</color>
+    <color name="fowBackground">#8D95A1</color>
+    <color name="white">#f5f5f5</color>
 </resources>

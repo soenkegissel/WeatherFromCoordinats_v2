@@ -12,7 +12,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.example.maks2.weathertocoordinats.ui.activities.MapsActivity" />
+        tools:context="com.example.maks2.weathertocoordinats.ui.activity.MapsActivity" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="56dp"
@@ -21,9 +21,9 @@
         android:background="@color/colorAccent"
         android:elevation="5dp"
         android:src="@drawable/ic_star_border_black_24dp"
-        app:layout_anchor="@+id/bottom_sheet"
+        app:layout_anchor="@+id/bottomSheet"
         app:layout_anchorGravity="top|end"
         android:id="@+id/fab"/>
 
-    <include layout="@layout/weather_card" />
+    <include layout="@layout/bottom_sheet" />
 </android.support.design.widget.CoordinatorLayout>

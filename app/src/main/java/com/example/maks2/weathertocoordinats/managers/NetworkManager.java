@@ -16,7 +16,6 @@ public class NetworkManager {
         final Gson gson = new GsonBuilder()
                 .create();
         return MyApplication.getApi().getData(lat, lng, key)
-                .subscribeOn(Schedulers.io())
-                .map(map -> map);
+                .subscribeOn(Schedulers.io());
     }
 }

@@ -1,115 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/bottom_sheet"
-    android:layout_width="match_parent"
-    android:layout_height="250dp"
-    android:background="@color/colorPrimary"
-    app:behavior_hideable="true"
-    app:behavior_peekHeight="0dp"
-    app:layout_behavior="@string/bottom_sheet_behavior"
-    android:orientation="vertical">
 
-    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/WeatherCard"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/WeatherCard"
+    android:layout_width="match_parent"
+    android:layout_height="185dp"
+    >
+    <android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="match_parent"
+        android:id="@+id/weather_layout"
         >
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/temperatureText"
+            android:layout_width="wrap_content"
+            android:layout_height="61dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="+16 C"
+            android:textSize="45sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/weatherImage"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/generalWeatherText"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/locationText"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@color/cardview_light_background">
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Odessa UK"
+            android:textSize="21sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/weatherImage"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
-            <RelativeLayout
-                android:id="@+id/WeatherCard_top"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:background="@color/cardview_light_background"
-                android:elevation="0.5dp">
+        <TextView
+            android:id="@+id/generalWeatherText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Light rain"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/weatherImage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/locationText"
+            app:layout_constraintVertical_bias="0.0" />
 
-                <TextView
-                    android:id="@+id/weatherLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:fontFamily="sans-serif-middle"
-                    android:text="@string/WeatherHereAtThisTime"
-                    android:textSize="16sp" />
+        <ImageView
+            android:id="@+id/weatherImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/weather_rain_day"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
-                <ImageView
-                    android:id="@+id/iconWeather"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_below="@id/weatherLabel"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="16dp" />
+        <ImageView
+            android:id="@+id/windicon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_wind_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/temperatureText"
+            app:layout_constraintTop_toBottomOf="@+id/generalWeatherText"
+            app:layout_constraintVertical_bias="0.85" />
 
-                <TextView
-                    android:id="@+id/weatherLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/weatherLabel"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_toRightOf="@+id/iconWeather"
-                    android:text="Odessa, UK" />
+        <TextView
+            android:id="@+id/windText"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="NW 4 m/s"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/windicon"
+            app:layout_constraintTop_toBottomOf="@+id/generalWeatherText"
+            app:layout_constraintVertical_bias="0.77" />
+    </android.support.constraint.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/weatherGeneral"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/weatherLocation"
-                    android:layout_marginLeft="16dp"
-                    android:layout_toRightOf="@+id/iconWeather"
-                    android:text="Sanny" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/WeatherCard_bottom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/WeatherCard_top"
-                android:background="@color/cardview_light_background">
-
-                <TextView
-                    android:id="@+id/temperatureView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="16dp"
-                    android:text="Odessa, UK" />
-
-                <TextView
-                    android:id="@+id/humidityview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/temperatureView"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="16dp"
-                    android:text="Sanny" />
-
-                <TextView
-                    android:id="@+id/pressureview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/humidityview"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="16dp"
-                    android:text="Sanny" />
-
-                <TextView
-                    android:id="@+id/windview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/pressureview"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="16dp"
-                    android:text="Sanny" />
-
-            </RelativeLayout>
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
-
-</LinearLayout>
+</android.support.v7.widget.CardView>
