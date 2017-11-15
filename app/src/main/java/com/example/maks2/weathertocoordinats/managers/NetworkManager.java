@@ -18,4 +18,10 @@ public class NetworkManager {
         return MyApplication.getApi().getData(lat, lng, key)
                 .subscribeOn(Schedulers.io());
     }
+    public static rx.Observable<WeatherModel>getWeatherByCityName(String q,String key){
+        final Gson gson = new GsonBuilder()
+                .create();
+        return MyApplication.getApi().getWeatherByCityName(q, key)
+                .subscribeOn(Schedulers.io());
+    }
 }

@@ -5,6 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:titleTextColor="@color/white"
+        >
+    </android.support.v7.widget.Toolbar>
+
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -12,12 +24,15 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.example.maks2.weathertocoordinats.ui.activity.MapsActivity" />
+        tools:context="com.example.maks2.weathertocoordinats.ui.activity.MapsActivity"
+        android:layout_below="@id/toolbar"
+        />
 
+    </RelativeLayout>
     <android.support.design.widget.FloatingActionButton
         android:layout_width="56dp"
         android:layout_height="56dp"
-       android:layout_margin="16dp"
+        android:layout_margin="16dp"
         android:background="@color/colorAccent"
         android:elevation="5dp"
         android:src="@drawable/ic_star_border_black_24dp"

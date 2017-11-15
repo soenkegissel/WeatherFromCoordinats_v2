@@ -1,12 +1,13 @@
 
 package com.example.maks2.weathertocoordinats.models;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class WeatherModel {
+public class WeatherModel implements Serializable {
 
     @SerializedName("coord")
     @Expose
