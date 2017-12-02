@@ -15,7 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            app:titleTextColor="@color/white"/>
+            app:titleTextColor="@color/white"
+            android:theme="@style/MyApp.ActionBarTheme"/>
 
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -36,7 +37,7 @@
         android:layout_margin="16dp"
         android:background="@color/colorAccent"
         android:elevation="5dp"
-        android:src="@drawable/ic_star_border_black_24dp"
+        android:src="@drawable/ic_action_favorite_add"
         app:layout_anchor="@+id/bottomSheet"
         app:layout_anchorGravity="top|end" />
 

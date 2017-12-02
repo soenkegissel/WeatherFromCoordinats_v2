@@ -10,6 +10,7 @@ import com.google.android.gms.maps.MapView;
 
 public interface iMapsActivityView extends MvpView {
     void showWeather(WeatherModel weatherModel);
-    void showException(Exception e);
+    void showMessage(String msg);
     void showProgress();
+    void hideProgress();
 }

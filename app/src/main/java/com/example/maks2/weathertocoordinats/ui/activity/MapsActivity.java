@@ -1,5 +1,6 @@
 package com.example.maks2.weathertocoordinats.ui.activity;
 
+import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -82,7 +84,7 @@ public class MapsActivity extends BaseActivity
         mapFragment.getMapAsync(this);
 
         fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_black_24dp)));
+        fab.setOnClickListener(view -> fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_favorite_added)));
         sharedPreferencesManager = new SharedPreferencesManager(this);
         sharedPreferencesManager.putListString("latlng", new ArrayList<>());
         Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -119,10 +121,24 @@ public class MapsActivity extends BaseActivity
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
+        EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchEditText.setTextColor(getResources().getColor(R.color.white));
+        searchEditText.setHintTextColor(getResources().getColor(R.color.white));
 
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_go_to_favorite:
+                Intent intent = new Intent(MapsActivity.this, FavoritesActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
@@ -239,12 +255,18 @@ public class MapsActivity extends BaseActivity
     }
 
     @Override
-    public void showException(Exception e) {
+    public void showMessage(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+
+    @Override
+    public void showProgress() {
 
     }
 
     @Override
-    public void showProgress() {
+    public void hideProgress() {
 
     }
 

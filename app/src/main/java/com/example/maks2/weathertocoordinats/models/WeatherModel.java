@@ -17,16 +17,16 @@ public class WeatherModel implements Serializable {
     private Sys sys;
     @SerializedName("weather")
     @Expose
-    private List<Weather> weather = null;
+    private java.util.List<Weather> weather = null;
     @SerializedName("main")
     @Expose
     private Main main;
+    @SerializedName("visibility")
+    @Expose
+    private Integer visibility;
     @SerializedName("wind")
     @Expose
     private Wind wind;
-    @SerializedName("rain")
-    @Expose
-    private Rain rain;
     @SerializedName("clouds")
     @Expose
     private Clouds clouds;
@@ -39,51 +39,84 @@ public class WeatherModel implements Serializable {
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("cod")
-    @Expose
-    private Integer cod;
 
     public Coord getCoord() {
         return coord;
+    }
+
+    public void setCoord(Coord coord) {
+        this.coord = coord;
     }
 
     public Sys getSys() {
         return sys;
     }
 
-    public List<Weather> getWeather() {
+    public void setSys(Sys sys) {
+        this.sys = sys;
+    }
+
+    public java.util.List<Weather> getWeather() {
         return weather;
+    }
+
+    public void setWeather(java.util.List<Weather> weather) {
+        this.weather = weather;
     }
 
     public Main getMain() {
         return main;
     }
 
+    public void setMain(Main main) {
+        this.main = main;
+    }
+
+    public Integer getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(Integer visibility) {
+        this.visibility = visibility;
+    }
+
     public Wind getWind() {
         return wind;
     }
 
-    public Rain getRain() {
-        return rain;
+    public void setWind(Wind wind) {
+        this.wind = wind;
     }
 
     public Clouds getClouds() {
         return clouds;
     }
 
+    public void setClouds(Clouds clouds) {
+        this.clouds = clouds;
+    }
+
     public Integer getDt() {
         return dt;
+    }
+
+    public void setDt(Integer dt) {
+        this.dt = dt;
     }
 
     public Integer getId() {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
 
-    public Integer getCod() {
-        return cod;
+    public void setName(String name) {
+        this.name = name;
     }
 }
