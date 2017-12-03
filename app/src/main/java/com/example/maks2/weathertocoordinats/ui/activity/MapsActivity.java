@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.presenters.MapsActivityPresenter;
 import com.example.maks2.weathertocoordinats.ui.BaseActivity;
+import com.example.maks2.weathertocoordinats.ui.dialogs.MaterialDialogBuilder;
 import com.example.maks2.weathertocoordinats.view_interfaces.iMapsActivityView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -45,10 +47,9 @@ public class MapsActivity extends BaseActivity
     private GoogleMap mMap;
     private BottomSheetBehavior bottomSheetBehavior;
     private FloatingActionButton fab;
-    private FragmentsManager fragmentsManager;
-    private WeatherModel weatherModel;
     private SharedPreferencesManager sharedPreferencesManager;
     private SearchView searchView;
+    private WeatherModel weatherModelTemp;
 
     @InjectPresenter
     MapsActivityPresenter mapsActivityPresenter;
@@ -84,17 +85,27 @@ public class MapsActivity extends BaseActivity
         mapFragment.getMapAsync(this);
 
         fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_favorite_added)));
+        fab.setOnClickListener(view -> {
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_favorite_added));
+            if (weatherModelTemp != null) {
+                mapsActivityPresenter.addWeatherToFavorite(weatherModelTemp);
+                showMessage(getString(R.string.added_to_favorite));
+                weatherModelTemp = null;
+            } else {
+                showMessage("Please select location before add it to favorites");
+
+            }
+
+        });
         sharedPreferencesManager = new SharedPreferencesManager(this);
         sharedPreferencesManager.putListString("latlng", new ArrayList<>());
-        Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mActionBarToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
     }
 
     @Override
     public void onMapClick(LatLng latLng) {
         mapsActivityPresenter.getWeatherByCoordinates(getCoordinates(latLng).get(0), getCoordinates(latLng).get(1));
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
 
@@ -121,7 +132,7 @@ public class MapsActivity extends BaseActivity
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
-        EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        EditText searchEditText = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(getResources().getColor(R.color.white));
         searchEditText.setHintTextColor(getResources().getColor(R.color.white));
 
@@ -132,8 +143,8 @@ public class MapsActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_go_to_favorite:
-                Intent intent = new Intent(MapsActivity.this, FavoritesActivity.class);
-                startActivity(intent);
+                    Intent intent = new Intent(MapsActivity.this, FavoritesActivity.class);
+                    startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -145,7 +156,6 @@ public class MapsActivity extends BaseActivity
         searchView.clearFocus();
         if (query.length() != 0) {
             mapsActivityPresenter.getWeatherByName(query);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             return true;
         } else {
             Toast toast = Toast.makeText(this, "Please input your search response", Toast.LENGTH_LONG);
@@ -174,6 +184,7 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void showWeather(WeatherModel weatherModel) {
+        weatherModelTemp = weatherModel;
         double temp, windspeed, winddeg;
         Log.e(" ", weatherModel.getName());
 
@@ -252,6 +263,7 @@ public class MapsActivity extends BaseActivity
         else if (winddeg >= 261 && winddeg <= 280) wind = getString(R.string.West);
         else wind = getString(R.string.NordWest);
         windText.setText(wind + " " + Math.round(windspeed) + " m/s" + "\n");
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Override

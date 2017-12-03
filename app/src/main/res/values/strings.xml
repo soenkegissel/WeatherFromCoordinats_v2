@@ -22,4 +22,16 @@
     <string name="UnknownCoordinats">Unknown location</string>
     <string name="WeatherHereAtThisTime">Weather here in this moment:</string>
     <string name="favorites_activity_label">Favorite locations</string>
+    <string name="added_to_favorite">Location added to favorites</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="clear_favorite_locations">You want to clear your favorite locations?</string>
+    <string name="locations_cleared_successfully">Locations cleared successfully</string>
+    <string name="oups">Ouuuups</string>
+    <string name="you_have_no_locations">You have no favorite locations</string>
+    <string name="ok">Ok</string>
+    <string name="deny">Deny</string>
+    <string name="check_info">Please check imputed information</string>
+    <string name="incorrect_location">Incorrect location</string>
+    <string name="no_internet">Please check your internet connection</string>
+    <string name="server_not_respond">Server is not respond</string>
 </resources>

@@ -6,10 +6,16 @@ import android.widget.Toast;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.example.maks2.weathertocoordinats.R;
+import com.example.maks2.weathertocoordinats.managers.HttpErrorViewManager;
 import com.example.maks2.weathertocoordinats.managers.NetworkManager;
+import com.example.maks2.weathertocoordinats.managers.RealmDatabaseManager;
+import com.example.maks2.weathertocoordinats.models.Location;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.view_interfaces.iMapsActivityView;
 
+import java.util.List;
+
+import io.realm.Realm;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -21,9 +27,13 @@ import rx.android.schedulers.AndroidSchedulers;
 public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
     Context context;
     private WeatherModel weatherModel;
+    Realm realm;
+    RealmDatabaseManager realmDatabaseManager;
 
     public MapsActivityPresenter(Context context) {
         this.context = context;
+        realm=Realm.getDefaultInstance();
+        realmDatabaseManager =new RealmDatabaseManager(realm);
     }
 
     public void getWeatherByCoordinates(String lat, String lng) {
@@ -38,7 +48,7 @@ public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        getViewState().showMessage(HttpErrorViewManager.convertToText(context,e.getLocalizedMessage()));
                     }
 
                     @Override
@@ -63,7 +73,7 @@ public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, HttpErrorViewManager.convertToText(context,e.getLocalizedMessage()), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -73,5 +83,15 @@ public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
                 });
 
         unsubscribeOnDestroy(getWeatherByName);
+    }
+
+    public void addWeatherToFavorite(WeatherModel weatherModel) {
+        Location location = new Location(weatherModel.getId(), weatherModel.getName());
+        realmDatabaseManager.addLocation(location);
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        realm.close();
     }
 }

@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.example.maks2.weathertocoordinats.network.OpenWeatherApi;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -25,6 +27,9 @@ public class MyApplication extends Application {
                 .build();
 
         openWeatherApi = retrofit.create(OpenWeatherApi.class);
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder().name("favorites.realm").build();
+        Realm.setDefaultConfiguration(config);
     }
 
     public static OpenWeatherApi getApi() {
