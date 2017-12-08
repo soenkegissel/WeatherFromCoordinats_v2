@@ -34,6 +34,12 @@ public class MaterialDialogBuilder {
                 .show();
     }
 
+    public static void createOneButton(Context context, int title, int content, PositiveAction positiveActionCallback) {
+        sBuildOneButtonDialog(context, title, positiveActionCallback)
+                .content(content)
+                .show();
+    }
+
     private static MaterialDialog.Builder sBuildDialog(Context context, int title, PositiveAction positiveActionCallback, NegativeAction negativeActionCallback) {
 
         return new MaterialDialog.Builder(context)
@@ -50,6 +56,17 @@ public class MaterialDialogBuilder {
                     dialog.dismiss();
                 })
                 .onNegative((dialog, which) -> dialog.cancel())
+                .cancelable(false);
+    }
+
+    private static MaterialDialog.Builder sBuildOneButtonDialog(Context context, int title, PositiveAction positiveActionCallback) {
+        return new MaterialDialog.Builder(context)
+                .title(title)
+                .positiveText(R.string.ok)
+                .onPositive((dialog, which) -> {
+                    if (positiveActionCallback != null)
+                        positiveActionCallback.positiveAction();
+                })
                 .cancelable(false);
     }
 

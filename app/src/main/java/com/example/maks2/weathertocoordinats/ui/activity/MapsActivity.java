@@ -1,5 +1,6 @@
 package com.example.maks2.weathertocoordinats.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -86,14 +88,13 @@ public class MapsActivity extends BaseActivity
 
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_favorite_added));
             if (weatherModelTemp != null) {
                 mapsActivityPresenter.addWeatherToFavorite(weatherModelTemp);
                 showMessage(getString(R.string.added_to_favorite));
                 weatherModelTemp = null;
+                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_go_to_favorites));
             } else {
                 showMessage("Please select location before add it to favorites");
-
             }
 
         });
@@ -101,10 +102,16 @@ public class MapsActivity extends BaseActivity
         sharedPreferencesManager.putListString("latlng", new ArrayList<>());
         Toolbar mActionBarToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
+
     }
 
     @Override
     public void onMapClick(LatLng latLng) {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
         mapsActivityPresenter.getWeatherByCoordinates(getCoordinates(latLng).get(0), getCoordinates(latLng).get(1));
     }
 

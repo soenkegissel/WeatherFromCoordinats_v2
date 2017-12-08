@@ -8,10 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Switch;
 import android.widget.Toast;
-
-import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.example.maks2.weathertocoordinats.R;
@@ -19,19 +16,13 @@ import com.example.maks2.weathertocoordinats.adapters.FavoritesAdapter;
 import com.example.maks2.weathertocoordinats.models.Location;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.presenters.FavoritesActivityPresenter;
-import com.example.maks2.weathertocoordinats.presenters.MapsActivityPresenter;
 import com.example.maks2.weathertocoordinats.ui.BaseActivity;
 import com.example.maks2.weathertocoordinats.ui.dialogs.MaterialDialogBuilder;
 import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityView;
-
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Sorry for this code from Railian Maksym (21.11.2017).
- */
 
 public class FavoritesActivity extends BaseActivity implements iFavoritesActivityView {
     @BindView(R.id.toolbar)
@@ -56,13 +47,10 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         layoutManager = new LinearLayoutManager(this);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(true);
-                presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()));
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            swipeRefreshLayout.setRefreshing(true);
+            presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()));
+            swipeRefreshLayout.setRefreshing(false);
         });
     }
 
@@ -73,7 +61,7 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
         if (locations.size() != 0)
             presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()));
         else
-            MaterialDialogBuilder.create(this, R.string.oups, R.string.you_have_no_locations, this::finish);
+            MaterialDialogBuilder.createOneButton(this, R.string.oups, R.string.you_have_no_locations, this::finish);
     }
 
     @Override
