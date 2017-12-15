@@ -16,6 +16,7 @@ import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityView;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,11 +28,11 @@ import butterknife.ButterKnife;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
     private Context context;
-    private List<WeatherModel> weatherModelList;
+    private List<WeatherModel> weatherModelList = new ArrayList<>();
 
     public FavoritesAdapter(Context context, List<WeatherModel> weatherModelList) {
         this.context = context;
-        this.weatherModelList = weatherModelList;
+        if(weatherModelList!=null) this.weatherModelList = weatherModelList;
     }
 
     @Override

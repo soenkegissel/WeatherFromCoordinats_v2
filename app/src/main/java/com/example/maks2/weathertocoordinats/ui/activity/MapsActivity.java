@@ -2,6 +2,7 @@ package com.example.maks2.weathertocoordinats.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.os.Bundle;
@@ -80,6 +81,20 @@ public class MapsActivity extends BaseActivity
 
         LinearLayout bottomSheet = findViewById(R.id.bottomSheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED){
+                    fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_favorite_add));
+                    weatherModelTemp=null;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager()
@@ -89,10 +104,13 @@ public class MapsActivity extends BaseActivity
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             if (weatherModelTemp != null) {
-                mapsActivityPresenter.addWeatherToFavorite(weatherModelTemp);
-                showMessage(getString(R.string.added_to_favorite));
-                weatherModelTemp = null;
-                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_go_to_favorites));
+                if (weatherModelTemp.getName().length()!=0) {
+                    mapsActivityPresenter.addWeatherToFavorite(weatherModelTemp);
+                    showMessage(getString(R.string.added_to_favorite));
+                    weatherModelTemp = null;
+                    fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_go_to_favorites));
+
+                }else showMessage("You can't add unknown location to favorites");
             } else {
                 showMessage("Please select location before add it to favorites");
             }
@@ -103,6 +121,7 @@ public class MapsActivity extends BaseActivity
         Toolbar mActionBarToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
 
+
     }
 
     @Override
@@ -110,7 +129,9 @@ public class MapsActivity extends BaseActivity
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
         }
         mapsActivityPresenter.getWeatherByCoordinates(getCoordinates(latLng).get(0), getCoordinates(latLng).get(1));
     }
