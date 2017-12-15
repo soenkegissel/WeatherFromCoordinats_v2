@@ -4,13 +4,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.arellomobile.mvp.MvpAppCompatActivity;
+
 import rx.subscriptions.CompositeSubscription;
 
 /**
  * Sorry for this code from Railian Maksym (14.11.2017).
  */
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends MvpAppCompatActivity {
     private CompositeSubscription mSubscription;
 
     @Override

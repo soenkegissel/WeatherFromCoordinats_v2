@@ -1,13 +1,16 @@
 package com.example.maks2.weathertocoordinats.network;
 
+import com.example.maks2.weathertocoordinats.models.Example;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -22,4 +25,8 @@ public interface OpenWeatherApi {
     @Headers("Content-Type: application/json; charset=UTF-8")
     @GET("/data/2.5/weather")
     rx.Observable<WeatherModel> getWeatherByCityName(@Query("q") String q,@Query("appid") String appid);
+
+    @Headers("Content-Type: application/json; charset=UTF-8")
+    @GET("/data/2.5/group")
+    rx.Observable<Example> getWeatherForCeveralCities(@Query("id") String id, @Query("appid") String appid);
 }
