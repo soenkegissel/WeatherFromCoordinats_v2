@@ -11,8 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
+import com.example.maks2.weathertocoordinats.managers.NetworkManager;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
+import com.example.maks2.weathertocoordinats.network.OpenWeatherApi;
 import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityView;
 import com.squareup.picasso.Picasso;
 
@@ -21,6 +24,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Sorry for this code from Railian Maksym (21.11.2017).
@@ -29,10 +35,11 @@ import butterknife.ButterKnife;
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
     private Context context;
     private List<WeatherModel> weatherModelList = new ArrayList<>();
+    private WeatherModel refreshedWeather;
 
     public FavoritesAdapter(Context context, List<WeatherModel> weatherModelList) {
         this.context = context;
-        if(weatherModelList!=null) this.weatherModelList = weatherModelList;
+        if (weatherModelList != null) this.weatherModelList = weatherModelList;
     }
 
     @Override
@@ -45,8 +52,24 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     public void onBindViewHolder(FavoritesViewHolder holder, int position) {
         holder.showWeather(weatherModelList.get(position));
         holder.imageView_refresh.setOnClickListener(view -> {
-            Toast toast = Toast.makeText(context, "CLICK", Toast.LENGTH_LONG);
-            toast.show();
+            Subscription refreshWeather = NetworkManager.getWeatherByCityName(weatherModelList.get(position).getName()+","+weatherModelList.get(position).getSys().getCountry().toLowerCase(), context.getResources().getString(R.string.appid))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<WeatherModel>() {
+                        @Override
+                        public void onCompleted() {
+                            holder.showWeather(refreshedWeather);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(WeatherModel weatherModel) {
+                            refreshedWeather = weatherModel;
+                        }
+                    });
         });
 
 
