@@ -13,6 +13,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.example.maks2.weathertocoordinats.R;
 import com.example.maks2.weathertocoordinats.adapters.FavoritesAdapter;
+import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
 import com.example.maks2.weathertocoordinats.models.Location;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.presenters.FavoritesActivityPresenter;
@@ -33,10 +34,12 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
     SwipeRefreshLayout swipeRefreshLayout;
 
     @InjectPresenter
-    FavoritesActivityPresenter presenter;
-    FavoritesAdapter favoritesAdapter;
-    RecyclerView.LayoutManager layoutManager;
-    List<Location> locations;
+    public FavoritesActivityPresenter presenter;
+    private FavoritesAdapter favoritesAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private List<Location> locations;
+    private SharedPreferencesManager sharedPreferencesManager;
+    private String units;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,9 +50,10 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         layoutManager = new LinearLayoutManager(this);
+        sharedPreferencesManager=new SharedPreferencesManager(this);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()));
+            presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()),units);
             swipeRefreshLayout.setRefreshing(false);
         });
     }
@@ -57,9 +61,10 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
     @Override
     protected void onResume() {
         super.onResume();
+        units=BaseActivity.convertUnits(sharedPreferencesManager.getString("units"));
         locations = presenter.getLocations();
         if (locations.size() != 0)
-            presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()));
+            presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()), units);
         else
             MaterialDialogBuilder.createOneButton(this, R.string.oups, R.string.you_have_no_locations, this::finish);
     }

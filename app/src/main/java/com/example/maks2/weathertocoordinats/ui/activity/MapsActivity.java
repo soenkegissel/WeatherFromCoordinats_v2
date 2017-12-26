@@ -53,6 +53,7 @@ public class MapsActivity extends BaseActivity
     private SharedPreferencesManager sharedPreferencesManager;
     private SearchView searchView;
     private WeatherModel weatherModelTemp;
+    private String units;
 
     @InjectPresenter
     MapsActivityPresenter mapsActivityPresenter;
@@ -84,9 +85,9 @@ public class MapsActivity extends BaseActivity
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED){
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_favorite_add));
-                    weatherModelTemp=null;
+                    weatherModelTemp = null;
                 }
             }
 
@@ -104,13 +105,13 @@ public class MapsActivity extends BaseActivity
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             if (weatherModelTemp != null) {
-                if (weatherModelTemp.getName().length()!=0) {
+                if (weatherModelTemp.getName().length() != 0) {
                     mapsActivityPresenter.addWeatherToFavorite(weatherModelTemp);
                     showMessage(getString(R.string.added_to_favorite));
                     weatherModelTemp = null;
                     fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_go_to_favorites));
 
-                }else showMessage("You can't add unknown location to favorites");
+                } else showMessage("You can't add unknown location to favorites");
             } else {
                 showMessage("Please select location before add it to favorites");
             }
@@ -120,8 +121,6 @@ public class MapsActivity extends BaseActivity
         sharedPreferencesManager.putListString("latlng", new ArrayList<>());
         Toolbar mActionBarToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
-
-
     }
 
     @Override
@@ -133,7 +132,7 @@ public class MapsActivity extends BaseActivity
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         }
-        mapsActivityPresenter.getWeatherByCoordinates(getCoordinates(latLng).get(0), getCoordinates(latLng).get(1));
+        mapsActivityPresenter.getWeatherByCoordinates(getCoordinates(latLng).get(0), getCoordinates(latLng).get(1),units);
     }
 
 
@@ -171,9 +170,12 @@ public class MapsActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_go_to_favorite:
-                    Intent intent = new Intent(MapsActivity.this, FavoritesActivity.class);
-                    startActivity(intent);
+                Intent intent = new Intent(MapsActivity.this, FavoritesActivity.class);
+                startActivity(intent);
                 return true;
+            case R.id.action_go_to_settings:
+                intent = new Intent(MapsActivity.this, SettingsActivity.class);
+                startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -183,7 +185,7 @@ public class MapsActivity extends BaseActivity
     public boolean onQueryTextSubmit(String query) {
         searchView.clearFocus();
         if (query.length() != 0) {
-            mapsActivityPresenter.getWeatherByName(query);
+            mapsActivityPresenter.getWeatherByName(query,units);
             return true;
         } else {
             Toast toast = Toast.makeText(this, "Please input your search response", Toast.LENGTH_LONG);
@@ -275,9 +277,11 @@ public class MapsActivity extends BaseActivity
         temp = weatherModel.getMain().getTemp();
         windspeed = weatherModel.getWind().getSpeed();
         winddeg = weatherModel.getWind().getDeg();
-        temp = (temp - 273);
-
-        temperatureText.setText(Math.round(temp) + " °C" + "\n");
+        if (units.equals("metric"))
+            temperatureText.setText(Math.round(temp) + " °C" + "\n");
+        else if (units.equals("imperial"))
+            temperatureText.setText(Math.round(temp) + " °F" + "\n");
+        else temperatureText.setText(Math.round(temp) + " °K" + "\n");
         String wind;
         if (winddeg <= 20 && winddeg >= 340) wind = getString(R.string.Nord);
         else if (winddeg <= 80 && winddeg >= 21)
@@ -313,6 +317,12 @@ public class MapsActivity extends BaseActivity
     @ProvidePresenter
     MapsActivityPresenter providePresenter() {
         return new MapsActivityPresenter(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        units = BaseActivity.convertUnits(sharedPreferencesManager.getString("units"));
     }
 }
 

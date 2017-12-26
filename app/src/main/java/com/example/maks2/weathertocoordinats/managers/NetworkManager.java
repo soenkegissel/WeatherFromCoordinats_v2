@@ -18,22 +18,22 @@ import rx.schedulers.Schedulers;
  */
 
 public class NetworkManager {
-    public static rx.Observable<WeatherModel> getWeather(String lat, String lng, String key) {
+    public static rx.Observable<WeatherModel> getWeather(String lat, String lng, String units, String key) {
         final Gson gson = new GsonBuilder()
                 .create();
-        return MyApplication.getApi().getData(lat, lng, key)
+        return MyApplication.getApi().getData(lat, lng, units, key)
                 .subscribeOn(Schedulers.io());
     }
-    public static rx.Observable<WeatherModel>getWeatherByCityName(String q,String key){
+    public static rx.Observable<WeatherModel>getWeatherByCityName(String q, String units, String key){
         final Gson gson = new GsonBuilder()
                 .create();
-        return MyApplication.getApi().getWeatherByCityName(q, key)
+        return MyApplication.getApi().getWeatherByCityName(q, units, key)
                 .subscribeOn(Schedulers.io());
     }
-    public static rx.Observable<Example>getWeatherForCeveralCities(String id, String key){
+    public static rx.Observable<Example>getWeatherForCeveralCities(String id, String units, String key){
         final Gson gson = new GsonBuilder()
                 .create();
-        return MyApplication.getApi().getWeatherForCeveralCities(id, key)
+        return MyApplication.getApi().getWeatherForCeveralCities(id, units, key)
                 .subscribeOn(Schedulers.io());
     }
 }

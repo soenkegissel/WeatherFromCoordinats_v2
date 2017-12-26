@@ -34,4 +34,9 @@
     <string name="incorrect_location">Incorrect location</string>
     <string name="no_internet">Please check your internet connection</string>
     <string name="server_not_respond">Server is not respond</string>
+    <string-array name="unitslist">
+        <item>Standart units (degrees Kelvin)</item>
+        <item>Metric units (degrees Celsius)</item>
+        <item>Imperial units (degrees Fahrenheit)</item>
+    </string-array>
 </resources>

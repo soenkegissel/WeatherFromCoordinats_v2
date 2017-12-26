@@ -38,8 +38,8 @@ public class FavoritesActivityPresenter extends BasePresenter<iFavoritesActivity
         realmDatabaseManager = new RealmDatabaseManager(realm);
     }
 
-    public void getWeatherCeveralCities(String id) {
-        Subscription subscription = NetworkManager.getWeatherForCeveralCities(id, context.getString(R.string.appid))
+    public void getWeatherCeveralCities(String id, String units) {
+        Subscription subscription = NetworkManager.getWeatherForCeveralCities(id, units, context.getString(R.string.appid))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Example>() {
                     @Override

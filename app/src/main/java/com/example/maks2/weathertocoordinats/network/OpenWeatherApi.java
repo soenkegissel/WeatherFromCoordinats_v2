@@ -20,13 +20,13 @@ import retrofit2.http.Query;
 public interface OpenWeatherApi {
     @Headers("Content-Type: application/json; charset=UTF-8")
     @GET("/data/2.5/weather")
-    rx.Observable<WeatherModel> getData(@Query("lat") String lat, @Query("lon") String lng, @Query("appid") String appid);
+    rx.Observable<WeatherModel> getData(@Query("lat") String lat, @Query("lon") String lng, @Query("units") String units, @Query("appid") String appid);
 
     @Headers("Content-Type: application/json; charset=UTF-8")
     @GET("/data/2.5/weather")
-    rx.Observable<WeatherModel> getWeatherByCityName(@Query("q") String q,@Query("appid") String appid);
+    rx.Observable<WeatherModel> getWeatherByCityName(@Query("q") String q, @Query("units") String units, @Query("appid") String appid);
 
     @Headers("Content-Type: application/json; charset=UTF-8")
     @GET("/data/2.5/group")
-    rx.Observable<Example> getWeatherForCeveralCities(@Query("id") String id, @Query("appid") String appid);
+    rx.Observable<Example> getWeatherForCeveralCities(@Query("id") String id, @Query("units") String units, @Query("appid") String appid);
 }

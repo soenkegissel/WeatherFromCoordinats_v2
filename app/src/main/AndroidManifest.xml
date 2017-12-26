@@ -22,6 +22,10 @@
             android:name=".ui.activity.MapsActivity"
             android:label="@string/title_activity_maps">
         </activity>
+        <activity
+            android:name=".ui.activity.SettingsActivity"
+            android:label="@string/title_activity_maps">
+        </activity>
         <activity android:name=".ui.activity.FavoritesActivity"
             android:label="@string/favorites_activity_label"/>
         <activity android:name=".ui.activity.SplashActivity"

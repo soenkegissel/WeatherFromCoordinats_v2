@@ -14,8 +14,10 @@ import android.widget.Toast;
 import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
 import com.example.maks2.weathertocoordinats.managers.NetworkManager;
+import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.network.OpenWeatherApi;
+import com.example.maks2.weathertocoordinats.ui.BaseActivity;
 import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityView;
 import com.squareup.picasso.Picasso;
 
@@ -36,10 +38,14 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     private Context context;
     private List<WeatherModel> weatherModelList = new ArrayList<>();
     private WeatherModel refreshedWeather;
+    private SharedPreferencesManager sharedPreferencesManager;
+    private String units;
 
     public FavoritesAdapter(Context context, List<WeatherModel> weatherModelList) {
         this.context = context;
         if (weatherModelList != null) this.weatherModelList = weatherModelList;
+        sharedPreferencesManager = new SharedPreferencesManager(context);
+        units= BaseActivity.convertUnits(sharedPreferencesManager.getString("units"));
     }
 
     @Override
@@ -52,7 +58,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     public void onBindViewHolder(FavoritesViewHolder holder, int position) {
         holder.showWeather(weatherModelList.get(position));
         holder.imageView_refresh.setOnClickListener(view -> {
-            Subscription refreshWeather = NetworkManager.getWeatherByCityName(weatherModelList.get(position).getName()+","+weatherModelList.get(position).getSys().getCountry().toLowerCase(), context.getResources().getString(R.string.appid))
+            Subscription refreshWeather = NetworkManager.getWeatherByCityName(weatherModelList.get(position).getName()+","+weatherModelList.get(position).getSys().getCountry().toLowerCase(), units, context.getResources().getString(R.string.appid))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<WeatherModel>() {
                         @Override
@@ -174,9 +180,12 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
                 temp = weatherModel.getMain().getTemp();
                 windspeed = weatherModel.getWind().getSpeed();
                 winddeg = weatherModel.getWind().getDeg();
-                temp = (temp - 273);
 
-                temperatureText.setText(Math.round(temp) + " °C" + "\n");
+                if (units.equals("metric"))
+                    temperatureText.setText(Math.round(temp) + " °C" + "\n");
+                else if (units.equals("imperial"))
+                    temperatureText.setText(Math.round(temp) + " °F" + "\n");
+                else temperatureText.setText(Math.round(temp) + " °K" + "\n");
                 String wind;
                 if (winddeg <= 20 && winddeg >= 340) wind = context.getString(R.string.Nord);
                 else if (winddeg <= 80 && winddeg >= 21)

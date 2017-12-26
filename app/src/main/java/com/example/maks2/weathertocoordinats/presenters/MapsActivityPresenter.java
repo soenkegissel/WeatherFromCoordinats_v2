@@ -36,8 +36,8 @@ public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
         realmDatabaseManager =new RealmDatabaseManager(realm);
     }
 
-    public void getWeatherByCoordinates(String lat, String lng) {
-        Subscription getWeatherByCoordinates = NetworkManager.getWeather(lat, lng, context.getString(R.string.appid))
+    public void getWeatherByCoordinates(String lat, String lng, String units) {
+        Subscription getWeatherByCoordinates = NetworkManager.getWeather(lat, lng, units, context.getString(R.string.appid))
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(weatherModelData -> weatherModelData.getWind().getDeg() != null)
                 .subscribe(new Subscriber<WeatherModel>() {
@@ -60,9 +60,9 @@ public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
         unsubscribeOnDestroy(getWeatherByCoordinates);
     }
 
-    public void getWeatherByName(String name) {
+    public void getWeatherByName(String name, String units) {
 
-        Subscription getWeatherByName = NetworkManager.getWeatherByCityName(name, context.getString(R.string.appid))
+        Subscription getWeatherByName = NetworkManager.getWeatherByCityName(name, units, context.getString(R.string.appid))
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(weatherModelData -> weatherModelData.getWind().getDeg() != null)
                 .subscribe(new Subscriber<WeatherModel>() {
