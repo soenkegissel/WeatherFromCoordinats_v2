@@ -1,10 +1,10 @@
 package com.example.maks2.weathertocoordinats.presenters;
 
 import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.arellomobile.mvp.InjectViewState;
+import com.example.maks2.weathertocoordinats.Constants;
+import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
 import com.example.maks2.weathertocoordinats.managers.HttpErrorViewManager;
 import com.example.maks2.weathertocoordinats.managers.NetworkManager;
@@ -14,8 +14,9 @@ import com.example.maks2.weathertocoordinats.models.Location;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityView;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.realm.Realm;
 import rx.Subscriber;
@@ -27,19 +28,22 @@ import rx.android.schedulers.AndroidSchedulers;
  */
 @InjectViewState
 public class FavoritesActivityPresenter extends BasePresenter<iFavoritesActivityView> {
-    Context context;
     private List<WeatherModel> weatherModelList;
+    Context context;
+    @Inject
     Realm realm;
+    @Inject
     RealmDatabaseManager realmDatabaseManager;
+    @Inject
+    NetworkManager networkManager;
 
     public FavoritesActivityPresenter(Context context) {
         this.context = context;
-        realm = Realm.getDefaultInstance();
-        realmDatabaseManager = new RealmDatabaseManager(realm);
+        ((MyApplication)context.getApplicationContext()).getAppComponent().inject(this);
     }
 
     public void getWeatherCeveralCities(String id, String units) {
-        Subscription subscription = NetworkManager.getWeatherForCeveralCities(id, units, context.getString(R.string.appid))
+        Subscription subscription = networkManager.getWeatherForCeveralCities(id, units, Constants.APP_ID)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Example>() {
                     @Override

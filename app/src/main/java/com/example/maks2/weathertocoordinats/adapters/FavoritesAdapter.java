@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.maks2.weathertocoordinats.Constants;
 import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
 import com.example.maks2.weathertocoordinats.managers.NetworkManager;
@@ -23,6 +24,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,6 +43,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     private WeatherModel refreshedWeather;
     private SharedPreferencesManager sharedPreferencesManager;
     private String units;
+    @Inject
+     NetworkManager networkManager;
 
     public FavoritesAdapter(Context context, List<WeatherModel> weatherModelList) {
         this.context = context;
@@ -58,7 +63,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     public void onBindViewHolder(FavoritesViewHolder holder, int position) {
         holder.showWeather(weatherModelList.get(position));
         holder.imageView_refresh.setOnClickListener(view -> {
-            Subscription refreshWeather = NetworkManager.getWeatherByCityName(weatherModelList.get(position).getName()+","+weatherModelList.get(position).getSys().getCountry().toLowerCase(), units, context.getResources().getString(R.string.appid))
+            Subscription refreshWeather = networkManager.getWeatherByCityName(weatherModelList.get(position).getName()+","+weatherModelList.get(position).getSys().getCountry().toLowerCase(), units, Constants.APP_ID)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<WeatherModel>() {
                         @Override

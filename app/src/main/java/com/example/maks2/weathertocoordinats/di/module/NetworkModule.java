@@ -1,4 +1,4 @@
-package com.example.maks2.weathertocoordinats.di;
+package com.example.maks2.weathertocoordinats.di.module;
 
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -32,11 +32,7 @@ public class NetworkModule {
 
     }
 
-    @Provides
-    @Singleton
-    SharedPreferences providesSharedPreferences(Application application) {
-        return PreferenceManager.getDefaultSharedPreferences(application);
-    }
+
 
     @Provides
     @Singleton

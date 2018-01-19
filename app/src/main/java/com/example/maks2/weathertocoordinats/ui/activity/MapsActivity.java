@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
 import com.example.maks2.weathertocoordinats.managers.FragmentsManager;
 import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
@@ -79,7 +80,6 @@ public class MapsActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
-
         LinearLayout bottomSheet = findViewById(R.id.bottomSheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -132,7 +132,7 @@ public class MapsActivity extends BaseActivity
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         }
-        mapsActivityPresenter.getWeatherByCoordinates(getCoordinates(latLng).get(0), getCoordinates(latLng).get(1),units);
+        mapsActivityPresenter.getWeatherByCoordinates(getCoordinates(latLng).get(0), getCoordinates(latLng).get(1), units);
     }
 
 
@@ -185,8 +185,11 @@ public class MapsActivity extends BaseActivity
     public boolean onQueryTextSubmit(String query) {
         searchView.clearFocus();
         if (query.length() != 0) {
-            mapsActivityPresenter.getWeatherByName(query,units);
-            return true;
+            if (query.contains(",")) {
+                mapsActivityPresenter.getWeatherByName(query, units);
+                return true;
+            } else showMessage("Please input City and Country in english (London, GB for example)");
+            return false;
         } else {
             Toast toast = Toast.makeText(this, "Please input your search response", Toast.LENGTH_LONG);
             toast.show();
@@ -277,11 +280,17 @@ public class MapsActivity extends BaseActivity
         temp = weatherModel.getMain().getTemp();
         windspeed = weatherModel.getWind().getSpeed();
         winddeg = weatherModel.getWind().getDeg();
-        if (units.equals("metric"))
-            temperatureText.setText(Math.round(temp) + " °C" + "\n");
-        else if (units.equals("imperial"))
-            temperatureText.setText(Math.round(temp) + " °F" + "\n");
-        else temperatureText.setText(Math.round(temp) + " °K" + "\n");
+        switch (units) {
+            case "metric":
+                temperatureText.setText(Math.round(temp) + " °C" + "\n");
+                break;
+            case "imperial":
+                temperatureText.setText(Math.round(temp) + " °F" + "\n");
+                break;
+            default:
+                temperatureText.setText(Math.round(temp) + " °K" + "\n");
+                break;
+        }
         String wind;
         if (winddeg <= 20 && winddeg >= 340) wind = getString(R.string.Nord);
         else if (winddeg <= 80 && winddeg >= 21)
