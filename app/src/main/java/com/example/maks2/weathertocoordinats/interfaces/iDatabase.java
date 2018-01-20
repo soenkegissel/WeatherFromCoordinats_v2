@@ -4,9 +4,6 @@ import com.example.maks2.weathertocoordinats.models.Location;
 
 import java.util.List;
 
-/**
- * Sorry for this code from Railian Maksym (02.12.2017).
- */
 
 public interface iDatabase {
     void addLocation(Location location);

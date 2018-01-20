@@ -23,13 +23,10 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-/**
- * Sorry for this code from Railian Maksym (21.11.2017).
- */
 @InjectViewState
 public class FavoritesActivityPresenter extends BasePresenter<iFavoritesActivityView> {
     private List<WeatherModel> weatherModelList;
-    Context context;
+    private Context context;
     @Inject
     Realm realm;
     @Inject
@@ -44,7 +41,7 @@ public class FavoritesActivityPresenter extends BasePresenter<iFavoritesActivity
 
     public void getWeatherCeveralCities(String id, String units) {
         Subscription subscription = networkManager.getWeatherForCeveralCities(id, units, Constants.APP_ID)
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(NetworkManager.addObservableParameters())
                 .subscribe(new Subscriber<Example>() {
                     @Override
                     public void onCompleted() {

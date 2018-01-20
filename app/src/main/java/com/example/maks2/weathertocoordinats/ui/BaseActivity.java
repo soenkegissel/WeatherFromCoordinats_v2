@@ -37,7 +37,7 @@ public class BaseActivity extends MvpAppCompatActivity {
             return "metric";
         }else if (units.contains("Fahrenheit")){
             return "imperial";
-        }else return new String();
+        }else return "";
     }
 
 }

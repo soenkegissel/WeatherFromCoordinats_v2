@@ -30,6 +30,8 @@ public class SettingsActivity extends BaseActivity {
     @Inject
     SharedPreferencesManager sharedPreferencesManager;
 
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

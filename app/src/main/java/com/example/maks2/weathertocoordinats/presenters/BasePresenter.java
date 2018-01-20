@@ -8,14 +8,11 @@ import com.arellomobile.mvp.MvpView;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Sorry for this code from Railian Maksym (16.11.2017).
- */
 
 public class BasePresenter<View extends MvpView> extends MvpPresenter<View> {
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
-    protected void unsubscribeOnDestroy(@NonNull Subscription subscription) {
+    void unsubscribeOnDestroy(@NonNull Subscription subscription) {
         compositeSubscription.add(subscription);
     }
 

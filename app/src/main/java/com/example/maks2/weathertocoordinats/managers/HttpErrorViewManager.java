@@ -4,10 +4,6 @@ import android.content.Context;
 
 import com.example.maks2.weathertocoordinats.R;
 
-/**
- * Sorry for this code from Railian Maksym (03.12.2017).
- */
-
 public class HttpErrorViewManager {
     private static final String http400 = String.valueOf(400);
     private static final String http404 = String.valueOf(404);
