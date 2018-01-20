@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
 import com.example.maks2.weathertocoordinats.adapters.FavoritesAdapter;
 import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
@@ -21,6 +22,9 @@ import com.example.maks2.weathertocoordinats.ui.BaseActivity;
 import com.example.maks2.weathertocoordinats.ui.dialogs.MaterialDialogBuilder;
 import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityView;
 import java.util.List;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -35,10 +39,10 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
 
     @InjectPresenter
     public FavoritesActivityPresenter presenter;
-    private FavoritesAdapter favoritesAdapter;
+    @Inject
+    SharedPreferencesManager sharedPreferencesManager;
+
     private RecyclerView.LayoutManager layoutManager;
-    private List<Location> locations;
-    private SharedPreferencesManager sharedPreferencesManager;
     private String units;
 
     @Override
@@ -46,11 +50,11 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
         ButterKnife.bind(this);
+        ((MyApplication) getApplicationContext()).getAppComponent().inject(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         layoutManager = new LinearLayoutManager(this);
-        sharedPreferencesManager=new SharedPreferencesManager(this);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
             presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()),units);
@@ -62,7 +66,7 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
     protected void onResume() {
         super.onResume();
         units=BaseActivity.convertUnits(sharedPreferencesManager.getString("units"));
-        locations = presenter.getLocations();
+        List<Location> locations = presenter.getLocations();
         if (locations.size() != 0)
             presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()), units);
         else
@@ -100,7 +104,7 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
 
     @Override
     public void showWeather(List<WeatherModel> weatherModels) {
-        favoritesAdapter = new FavoritesAdapter(this, weatherModels);
+        FavoritesAdapter favoritesAdapter = new FavoritesAdapter(this, weatherModels);
         favorites_RV.setLayoutManager(layoutManager);
         favorites_RV.setAdapter(favoritesAdapter);
     }

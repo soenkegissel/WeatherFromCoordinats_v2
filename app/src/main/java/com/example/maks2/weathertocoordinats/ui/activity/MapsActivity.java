@@ -23,14 +23,15 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+
 import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
-import com.example.maks2.weathertocoordinats.managers.FragmentsManager;
+
 import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.presenters.MapsActivityPresenter;
 import com.example.maks2.weathertocoordinats.ui.BaseActivity;
-import com.example.maks2.weathertocoordinats.ui.dialogs.MaterialDialogBuilder;
+
 import com.example.maks2.weathertocoordinats.view_interfaces.iMapsActivityView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,6 +42,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -48,10 +51,8 @@ import butterknife.ButterKnife;
 public class MapsActivity extends BaseActivity
         implements GoogleMap.OnMapClickListener, OnMapReadyCallback, SearchView.OnQueryTextListener, iMapsActivityView {
 
-    private GoogleMap mMap;
     private BottomSheetBehavior bottomSheetBehavior;
     private FloatingActionButton fab;
-    private SharedPreferencesManager sharedPreferencesManager;
     private SearchView searchView;
     private WeatherModel weatherModelTemp;
     private String units;
@@ -73,13 +74,15 @@ public class MapsActivity extends BaseActivity
     ImageView windicon;
     @BindView(R.id.weather_layout)
     ConstraintLayout weatherCard;
-
+    @Inject
+    SharedPreferencesManager sharedPreferencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
+        ((MyApplication)getApplication()).getAppComponent().inject(this);
         LinearLayout bottomSheet = findViewById(R.id.bottomSheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -117,7 +120,6 @@ public class MapsActivity extends BaseActivity
             }
 
         });
-        sharedPreferencesManager = new SharedPreferencesManager(this);
         sharedPreferencesManager.putListString("latlng", new ArrayList<>());
         Toolbar mActionBarToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
@@ -138,8 +140,7 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.setOnMapClickListener(this);
+        googleMap.setOnMapClickListener(this);
     }
 
 

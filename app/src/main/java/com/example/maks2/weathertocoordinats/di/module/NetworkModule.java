@@ -33,7 +33,6 @@ public class NetworkModule {
     }
 
 
-
     @Provides
     @Singleton
     Gson provideGson() {
@@ -61,13 +60,13 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    OpenWeatherApi provideApi(Retrofit retrofit){
+    OpenWeatherApi provideApi(Retrofit retrofit) {
         return retrofit.create(OpenWeatherApi.class);
     }
 
     @Provides
     @Singleton
-    NetworkManager providesNetworkManager(OpenWeatherApi api){
+    NetworkManager providesNetworkManager(OpenWeatherApi api) {
         return new NetworkManager(api);
     }
 }

@@ -2,23 +2,34 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'weather_key'
+            keyPassword 'Megusta46084608'
+            storeFile file('keys/debug.jks')
+            storePassword 'Megusta46084608'
+        }
+    }
     compileSdkVersion 26
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.example.maks2.weathertocoordinats"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 4
-        versionName "1.4"
+        versionCode 6
+        versionName "1.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable = false
+            signingConfig signingConfigs.config
         }
-        debug{
-            debuggable=true;
+        debug {
+            debuggable = true
+            signingConfig signingConfigs.config
         }
     }
     compileOptions {

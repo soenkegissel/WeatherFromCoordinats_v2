@@ -18,8 +18,7 @@ public class SharedPreferencesManager {
     private static final String NAME_KEY = "pref";
     private static final String DEF_STRING_VALUE = "";
     private static final Long DEF_LONG_VALUE = 0L;
-    private static final String TOKEN_KEY = "token";
-    private static final String ROLE_KEY = "role";
+
 
     private Context mContext;
     private SharedPreferences sharedPreferences;
@@ -30,11 +29,11 @@ public class SharedPreferencesManager {
         initPref();
     }
 
-    public void initPref() {
+    private void initPref() {
         initShareAndEdit(NAME_KEY);
     }
 
-    public void initShareAndEdit(String name) {
+    private void initShareAndEdit(String name) {
         sharedPreferences = mContext.getSharedPreferences(name, MODE_PRIVATE);
         editor = sharedPreferences.edit();
     }
@@ -77,7 +76,4 @@ public class SharedPreferencesManager {
         return value;
     }
 
-    public String getToken() {
-        return getString(TOKEN_KEY);
-    }
 }

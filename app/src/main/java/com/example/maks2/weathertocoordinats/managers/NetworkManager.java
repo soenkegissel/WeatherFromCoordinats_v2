@@ -25,7 +25,7 @@ import rx.schedulers.Schedulers;
 
 public class NetworkManager {
 
-    OpenWeatherApi api;
+    private OpenWeatherApi api;
 
     public NetworkManager(OpenWeatherApi api) {
         this.api = api;

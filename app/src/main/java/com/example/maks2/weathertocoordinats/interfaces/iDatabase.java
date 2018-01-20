@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface iDatabase {
     void addLocation(Location location);
-    void addLocations(List<Location> locations);
     Location getLocationbyID(int id);
     List<Location>getLocations();
     void removeLocation(Location location);

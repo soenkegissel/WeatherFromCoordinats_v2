@@ -25,8 +25,9 @@ import rx.android.schedulers.AndroidSchedulers;
  */
 @InjectViewState
 public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
-    Context context;
+    private Context context;
     private WeatherModel weatherModel;
+    @Inject
     Realm realm;
     @Inject
     RealmDatabaseManager realmDatabaseManager;

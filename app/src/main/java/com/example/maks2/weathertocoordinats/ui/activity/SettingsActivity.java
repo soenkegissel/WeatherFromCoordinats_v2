@@ -9,11 +9,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toolbar;
 
+import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
 import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
 import com.example.maks2.weathertocoordinats.ui.BaseActivity;
 
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,19 +27,18 @@ public class SettingsActivity extends BaseActivity {
     Spinner spinner;
     @BindView(R.id.toolbar)
     android.support.v7.widget.Toolbar toolbar;
-
-    private SharedPreferencesManager sharedPreferencesManager;
-    private String units;
+    @Inject
+    SharedPreferencesManager sharedPreferencesManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
+        ((MyApplication)getApplication()).getAppComponent().inject(this);
         android.support.v7.widget.Toolbar mActionBarToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
-        sharedPreferencesManager = new SharedPreferencesManager(this);
-        units=sharedPreferencesManager.getString("units");
+        String units = sharedPreferencesManager.getString("units");
         ArrayAdapter<?> adapter =
                 ArrayAdapter.createFromResource(this, R.array.unitslist, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
