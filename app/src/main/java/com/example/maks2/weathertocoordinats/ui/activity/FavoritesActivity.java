@@ -11,8 +11,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
 import com.example.maks2.weathertocoordinats.adapters.FavoritesAdapter;
+import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
 import com.example.maks2.weathertocoordinats.models.Location;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.presenters.FavoritesActivityPresenter;
@@ -20,6 +22,9 @@ import com.example.maks2.weathertocoordinats.ui.BaseActivity;
 import com.example.maks2.weathertocoordinats.ui.dialogs.MaterialDialogBuilder;
 import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityView;
 import java.util.List;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -33,23 +38,26 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
     SwipeRefreshLayout swipeRefreshLayout;
 
     @InjectPresenter
-    FavoritesActivityPresenter presenter;
-    FavoritesAdapter favoritesAdapter;
-    RecyclerView.LayoutManager layoutManager;
-    List<Location> locations;
+    public FavoritesActivityPresenter presenter;
+    @Inject
+    SharedPreferencesManager sharedPreferencesManager;
+
+    private RecyclerView.LayoutManager layoutManager;
+    private String units;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
         ButterKnife.bind(this);
+        ((MyApplication) getApplicationContext()).getAppComponent().inject(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         layoutManager = new LinearLayoutManager(this);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()));
+            presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()),units);
             swipeRefreshLayout.setRefreshing(false);
         });
     }
@@ -57,9 +65,10 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
     @Override
     protected void onResume() {
         super.onResume();
-        locations = presenter.getLocations();
+        units=BaseActivity.convertUnits(sharedPreferencesManager.getString("units"));
+        List<Location> locations = presenter.getLocations();
         if (locations.size() != 0)
-            presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()));
+            presenter.getWeatherCeveralCities(Location.listToString(presenter.getLocations()), units);
         else
             MaterialDialogBuilder.createOneButton(this, R.string.oups, R.string.you_have_no_locations, this::finish);
     }
@@ -95,7 +104,7 @@ public class FavoritesActivity extends BaseActivity implements iFavoritesActivit
 
     @Override
     public void showWeather(List<WeatherModel> weatherModels) {
-        favoritesAdapter = new FavoritesAdapter(this, weatherModels);
+        FavoritesAdapter favoritesAdapter = new FavoritesAdapter(this, weatherModels);
         favorites_RV.setLayoutManager(layoutManager);
         favorites_RV.setAdapter(favoritesAdapter);
     }

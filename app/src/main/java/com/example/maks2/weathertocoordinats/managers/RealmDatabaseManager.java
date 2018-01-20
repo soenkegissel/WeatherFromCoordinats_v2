@@ -29,13 +29,6 @@ public class RealmDatabaseManager implements iDatabase {
     }
 
     @Override
-    public void addLocations(List<Location> locations) {
-        realm.beginTransaction();
-        realm.insertOrUpdate(locations);
-        realm.commitTransaction();
-    }
-
-    @Override
     public Location getLocationbyID(int id) {
         realm.beginTransaction();
         Location location = realm.where(Location.class).equalTo("id", id).findFirst();

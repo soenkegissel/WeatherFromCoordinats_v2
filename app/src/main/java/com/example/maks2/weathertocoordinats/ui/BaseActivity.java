@@ -32,4 +32,12 @@ public class BaseActivity extends MvpAppCompatActivity {
         return mSubscription;
     }
 
+    public static String convertUnits(String units){
+        if (units.contains("Celsius")){
+            return "metric";
+        }else if (units.contains("Fahrenheit")){
+            return "imperial";
+        }else return new String();
+    }
+
 }

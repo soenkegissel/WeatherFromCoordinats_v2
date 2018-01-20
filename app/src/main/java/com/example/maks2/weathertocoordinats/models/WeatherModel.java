@@ -1,13 +1,17 @@
 
 package com.example.maks2.weathertocoordinats.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class WeatherModel implements Serializable {
+public class WeatherModel implements Parcelable {
 
     @SerializedName("coord")
     @Expose
@@ -119,4 +123,52 @@ public class WeatherModel implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.coord, flags);
+        dest.writeParcelable(this.sys, flags);
+        dest.writeList(this.weather);
+        dest.writeParcelable(this.main, flags);
+        dest.writeValue(this.visibility);
+        dest.writeParcelable(this.wind, flags);
+        dest.writeParcelable(this.clouds, flags);
+        dest.writeValue(this.dt);
+        dest.writeValue(this.id);
+        dest.writeString(this.name);
+    }
+
+    public WeatherModel() {
+    }
+
+    protected WeatherModel(Parcel in) {
+        this.coord = in.readParcelable(Coord.class.getClassLoader());
+        this.sys = in.readParcelable(Sys.class.getClassLoader());
+        this.weather = new ArrayList<Weather>();
+        in.readList(this.weather, Weather.class.getClassLoader());
+        this.main = in.readParcelable(Main.class.getClassLoader());
+        this.visibility = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.wind = in.readParcelable(Wind.class.getClassLoader());
+        this.clouds = in.readParcelable(Clouds.class.getClassLoader());
+        this.dt = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.name = in.readString();
+    }
+
+    public static final Parcelable.Creator<WeatherModel> CREATOR = new Parcelable.Creator<WeatherModel>() {
+        @Override
+        public WeatherModel createFromParcel(Parcel source) {
+            return new WeatherModel(source);
+        }
+
+        @Override
+        public WeatherModel[] newArray(int size) {
+            return new WeatherModel[size];
+        }
+    };
 }

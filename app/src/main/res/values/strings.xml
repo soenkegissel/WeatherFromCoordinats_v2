@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">WeatherToCoordinats</string>
     <string name="title_activity_maps">Map</string>
-    <string name="appid">9f39aeac50811bd3d3aab27cb635f4c8</string>
-    <string name="BaseUrl">http://api.openweathermap.org</string>
     <string name="MapsApiKey">AIzaSyC1Yf65opdj0C82EarUYP94z3gBuP5F1dE</string>
     <string name="ServiceUnreachable">Weather service unreachable, please check your connection</string>
     <string name="WhereIsIt">Where is it:</string>
@@ -34,4 +32,9 @@
     <string name="incorrect_location">Incorrect location</string>
     <string name="no_internet">Please check your internet connection</string>
     <string name="server_not_respond">Server is not respond</string>
+    <string-array name="unitslist">
+        <item>Standart units (degrees Kelvin)</item>
+        <item>Metric units (degrees Celsius)</item>
+        <item>Imperial units (degrees Fahrenheit)</item>
+    </string-array>
 </resources>

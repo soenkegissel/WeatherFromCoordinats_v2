@@ -4,8 +4,8 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.arellomobile.mvp.MvpPresenter;
-import com.example.maks2.weathertocoordinats.R;
+import com.example.maks2.weathertocoordinats.Constants;
+import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.managers.HttpErrorViewManager;
 import com.example.maks2.weathertocoordinats.managers.NetworkManager;
 import com.example.maks2.weathertocoordinats.managers.RealmDatabaseManager;
@@ -13,7 +13,7 @@ import com.example.maks2.weathertocoordinats.models.Location;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.view_interfaces.iMapsActivityView;
 
-import java.util.List;
+import javax.inject.Inject;
 
 import io.realm.Realm;
 import rx.Subscriber;
@@ -25,19 +25,22 @@ import rx.android.schedulers.AndroidSchedulers;
  */
 @InjectViewState
 public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
-    Context context;
+    private Context context;
     private WeatherModel weatherModel;
+    @Inject
     Realm realm;
+    @Inject
     RealmDatabaseManager realmDatabaseManager;
+    @Inject
+    NetworkManager networkManager;
 
     public MapsActivityPresenter(Context context) {
         this.context = context;
-        realm=Realm.getDefaultInstance();
-        realmDatabaseManager =new RealmDatabaseManager(realm);
+        ((MyApplication)context.getApplicationContext()).getAppComponent().inject(this);
     }
 
-    public void getWeatherByCoordinates(String lat, String lng) {
-        Subscription getWeatherByCoordinates = NetworkManager.getWeather(lat, lng, context.getString(R.string.appid))
+    public void getWeatherByCoordinates(String lat, String lng, String units) {
+        Subscription getWeatherByCoordinates = networkManager.getWeather(lat, lng, units, Constants.APP_ID)
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(weatherModelData -> weatherModelData.getWind().getDeg() != null)
                 .subscribe(new Subscriber<WeatherModel>() {
@@ -60,9 +63,9 @@ public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
         unsubscribeOnDestroy(getWeatherByCoordinates);
     }
 
-    public void getWeatherByName(String name) {
+    public void getWeatherByName(String name, String units) {
 
-        Subscription getWeatherByName = NetworkManager.getWeatherByCityName(name, context.getString(R.string.appid))
+        Subscription getWeatherByName = networkManager.getWeatherByCityName(name, units, Constants.APP_ID)
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(weatherModelData -> weatherModelData.getWind().getDeg() != null)
                 .subscribe(new Subscriber<WeatherModel>() {

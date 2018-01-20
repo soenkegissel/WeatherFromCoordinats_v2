@@ -23,13 +23,15 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+
+import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
-import com.example.maks2.weathertocoordinats.managers.FragmentsManager;
+
 import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.presenters.MapsActivityPresenter;
 import com.example.maks2.weathertocoordinats.ui.BaseActivity;
-import com.example.maks2.weathertocoordinats.ui.dialogs.MaterialDialogBuilder;
+
 import com.example.maks2.weathertocoordinats.view_interfaces.iMapsActivityView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,6 +42,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -47,12 +51,11 @@ import butterknife.ButterKnife;
 public class MapsActivity extends BaseActivity
         implements GoogleMap.OnMapClickListener, OnMapReadyCallback, SearchView.OnQueryTextListener, iMapsActivityView {
 
-    private GoogleMap mMap;
     private BottomSheetBehavior bottomSheetBehavior;
     private FloatingActionButton fab;
-    private SharedPreferencesManager sharedPreferencesManager;
     private SearchView searchView;
     private WeatherModel weatherModelTemp;
+    private String units;
 
     @InjectPresenter
     MapsActivityPresenter mapsActivityPresenter;
@@ -71,22 +74,23 @@ public class MapsActivity extends BaseActivity
     ImageView windicon;
     @BindView(R.id.weather_layout)
     ConstraintLayout weatherCard;
-
+    @Inject
+    SharedPreferencesManager sharedPreferencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
-
+        ((MyApplication)getApplication()).getAppComponent().inject(this);
         LinearLayout bottomSheet = findViewById(R.id.bottomSheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED){
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_favorite_add));
-                    weatherModelTemp=null;
+                    weatherModelTemp = null;
                 }
             }
 
@@ -104,24 +108,21 @@ public class MapsActivity extends BaseActivity
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             if (weatherModelTemp != null) {
-                if (weatherModelTemp.getName().length()!=0) {
+                if (weatherModelTemp.getName().length() != 0) {
                     mapsActivityPresenter.addWeatherToFavorite(weatherModelTemp);
                     showMessage(getString(R.string.added_to_favorite));
                     weatherModelTemp = null;
                     fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_go_to_favorites));
 
-                }else showMessage("You can't add unknown location to favorites");
+                } else showMessage("You can't add unknown location to favorites");
             } else {
                 showMessage("Please select location before add it to favorites");
             }
 
         });
-        sharedPreferencesManager = new SharedPreferencesManager(this);
         sharedPreferencesManager.putListString("latlng", new ArrayList<>());
         Toolbar mActionBarToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
-
-
     }
 
     @Override
@@ -133,14 +134,13 @@ public class MapsActivity extends BaseActivity
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         }
-        mapsActivityPresenter.getWeatherByCoordinates(getCoordinates(latLng).get(0), getCoordinates(latLng).get(1));
+        mapsActivityPresenter.getWeatherByCoordinates(getCoordinates(latLng).get(0), getCoordinates(latLng).get(1), units);
     }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.setOnMapClickListener(this);
+        googleMap.setOnMapClickListener(this);
     }
 
 
@@ -171,9 +171,12 @@ public class MapsActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_go_to_favorite:
-                    Intent intent = new Intent(MapsActivity.this, FavoritesActivity.class);
-                    startActivity(intent);
+                Intent intent = new Intent(MapsActivity.this, FavoritesActivity.class);
+                startActivity(intent);
                 return true;
+            case R.id.action_go_to_settings:
+                intent = new Intent(MapsActivity.this, SettingsActivity.class);
+                startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -183,8 +186,11 @@ public class MapsActivity extends BaseActivity
     public boolean onQueryTextSubmit(String query) {
         searchView.clearFocus();
         if (query.length() != 0) {
-            mapsActivityPresenter.getWeatherByName(query);
-            return true;
+            if (query.contains(",")) {
+                mapsActivityPresenter.getWeatherByName(query, units);
+                return true;
+            } else showMessage("Please input City and Country in english (London, GB for example)");
+            return false;
         } else {
             Toast toast = Toast.makeText(this, "Please input your search response", Toast.LENGTH_LONG);
             toast.show();
@@ -275,9 +281,17 @@ public class MapsActivity extends BaseActivity
         temp = weatherModel.getMain().getTemp();
         windspeed = weatherModel.getWind().getSpeed();
         winddeg = weatherModel.getWind().getDeg();
-        temp = (temp - 273);
-
-        temperatureText.setText(Math.round(temp) + " °C" + "\n");
+        switch (units) {
+            case "metric":
+                temperatureText.setText(Math.round(temp) + " °C" + "\n");
+                break;
+            case "imperial":
+                temperatureText.setText(Math.round(temp) + " °F" + "\n");
+                break;
+            default:
+                temperatureText.setText(Math.round(temp) + " °K" + "\n");
+                break;
+        }
         String wind;
         if (winddeg <= 20 && winddeg >= 340) wind = getString(R.string.Nord);
         else if (winddeg <= 80 && winddeg >= 21)
@@ -313,6 +327,12 @@ public class MapsActivity extends BaseActivity
     @ProvidePresenter
     MapsActivityPresenter providePresenter() {
         return new MapsActivityPresenter(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        units = BaseActivity.convertUnits(sharedPreferencesManager.getString("units"));
     }
 }
 
