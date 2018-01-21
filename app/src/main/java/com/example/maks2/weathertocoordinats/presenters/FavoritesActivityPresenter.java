@@ -17,6 +17,7 @@ import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityV
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subscribers.DefaultSubscriber;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,16 +38,16 @@ public class FavoritesActivityPresenter extends BasePresenter<iFavoritesActivity
 
     public FavoritesActivityPresenter(Context context) {
         this.context = context;
-        ((MyApplication)context.getApplicationContext()).getAppComponent().inject(this);
+        ((MyApplication) context.getApplicationContext()).getAppComponent().inject(this);
     }
 
     public void getWeatherCeveralCities(String id, String units) {
         Disposable subscription = networkManager.getWeatherForCeveralCities(id, units, Constants.APP_ID)
-            .filter(example -> example!=null)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(example -> weatherModelList=example.getList(),
-                throwable -> getViewState().showMessage(HttpErrorViewManager.convertToText(context,throwable.getLocalizedMessage())),
-                ()->getViewState().showWeather(weatherModelList));
+                .compose(NetworkManager.applyObservableAsync())
+                .filter(example -> example != null)
+                .subscribe(example -> weatherModelList = example.getList(),
+                        throwable -> getViewState().showMessage(HttpErrorViewManager.convertToText(context, throwable.getLocalizedMessage())),
+                        () -> getViewState().showWeather(weatherModelList));
 
         unsubscribeOnDestroy(subscription);
     }

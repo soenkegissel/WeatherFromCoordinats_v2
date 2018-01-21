@@ -19,18 +19,15 @@ public class NetworkManager {
 
   public io.reactivex.Observable<WeatherModel> getWeather(String lat, String lng, String units,
       String key) {
-    return api.getData(lat, lng, units, key)
-        .subscribeOn(Schedulers.io());
+    return api.getData(lat, lng, units, key);
   }
 
   public io.reactivex.Observable<WeatherModel> getWeatherByCityName(String q, String units, String key) {
-    return api.getWeatherByCityName(q, units, key)
-        .subscribeOn(Schedulers.io());
+    return api.getWeatherByCityName(q, units, key);
   }
 
   public io.reactivex.Observable<Example> getWeatherForCeveralCities(String id, String units, String key) {
-    return api.getWeatherForCeveralCities(id, units, key)
-        .subscribeOn(Schedulers.io());
+    return api.getWeatherForCeveralCities(id, units, key);
   }
 
   public static <T> ObservableTransformer<T, T> applyObservableAsync() {

@@ -29,7 +29,6 @@ android {
         }
         debug {
             debuggable = true
-            signingConfig signingConfigs.config
         }
     }
     compileOptions {
@@ -64,7 +63,7 @@ dependencies {
     compile 'com.arello-mobile:moxy-app-compat:1.5.3'
     annotationProcessor 'com.arello-mobile:moxy-compiler:1.5.3'
     compile 'com.google.dagger:dagger-android:2.14.1'
-    compile'com.google.dagger:dagger-android-support:2.14.1'
+    compile 'com.google.dagger:dagger-android-support:2.14.1'
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.14.1'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.14.1'
 }
