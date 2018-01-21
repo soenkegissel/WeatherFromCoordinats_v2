@@ -14,11 +14,15 @@ import android.widget.Toast;
 import com.example.maks2.weathertocoordinats.Constants;
 import com.example.maks2.weathertocoordinats.MyApplication;
 import com.example.maks2.weathertocoordinats.R;
+import com.example.maks2.weathertocoordinats.managers.HttpErrorViewManager;
 import com.example.maks2.weathertocoordinats.managers.NetworkManager;
 import com.example.maks2.weathertocoordinats.managers.SharedPreferencesManager;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.ui.BaseActivity;
 import com.squareup.picasso.Picasso;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,15 +31,14 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+
 
 /**
  * Sorry for this code from Railian Maksym (21.11.2017).
  */
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
+
     @Inject
     SharedPreferencesManager sharedPreferencesManager;
     @Inject
@@ -49,8 +52,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     public FavoritesAdapter(Context context, List<WeatherModel> weatherModelList) {
         this.context = context;
-        ((MyApplication)context.getApplicationContext()).getAppComponent().inject(this);
-        if (weatherModelList != null) this.weatherModelList = weatherModelList;
+        ((MyApplication) context.getApplicationContext()).getAppComponent().inject(this);
+        if (weatherModelList != null) {
+            this.weatherModelList = weatherModelList;
+        }
         units = BaseActivity.convertUnits(sharedPreferencesManager.getString("units"));
     }
 
@@ -64,25 +69,17 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     public void onBindViewHolder(FavoritesViewHolder holder, int position) {
         holder.showWeather(weatherModelList.get(position));
         holder.imageView_refresh.setOnClickListener(view -> {
-            Subscription refreshWeather = networkManager.getWeatherByCityName(weatherModelList.get(position).getName() + "," + weatherModelList.get(position).getSys().getCountry().toLowerCase(), units, Constants.APP_ID)
+            Disposable refreshWeather = networkManager.getWeatherByCityName(
+                    weatherModelList.get(position).getName() + "," + weatherModelList.get(position).getSys()
+                            .getCountry().toLowerCase(), units, Constants.APP_ID)
+                    .compose(NetworkManager.applyObservableAsync())
+                    .filter(weatherModelData -> weatherModelData.getWind().getDeg() != null)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<WeatherModel>() {
-                        @Override
-                        public void onCompleted() {
-                            holder.showWeather(refreshedWeather);
-                        }
+                    .subscribe(weatherModel -> refreshedWeather = weatherModel,
+                            throwable -> HttpErrorViewManager.convertToText(context, throwable.getLocalizedMessage()),
+                            () -> holder.showWeather(refreshedWeather));
 
-                        @Override
-                        public void onError(Throwable e) {
-
-                        }
-
-                        @Override
-                        public void onNext(WeatherModel weatherModel) {
-                            refreshedWeather = weatherModel;
-                        }
-                    });
-            refreshWeather.unsubscribe();
+            refreshWeather.dispose();
         });
 
     }
@@ -93,6 +90,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     }
 
     class FavoritesViewHolder extends RecyclerView.ViewHolder {
+
         @BindView(R.id.locationText)
         TextView locationText;
         @BindView(R.id.generalWeatherText)
@@ -123,7 +121,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
             double temp, windspeed, winddeg;
             Log.e(" ", weatherModel.getName());
 
-            Toast toast = Toast.makeText(context, context.getString(R.string.ServiceUnreachable), Toast.LENGTH_SHORT);
+            Toast toast = Toast
+                    .makeText(context, context.getString(R.string.ServiceUnreachable), Toast.LENGTH_SHORT);
             if (weatherModel.getSys().getCountry() == null) {
                 locationText.setText(context.getString(R.string.UnknownCoordinats));
             } else {
@@ -179,7 +178,6 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
             }
 
-
             generalWeatherText.setText(weatherModel.getWeather().get(0).getDescription());
             temp = weatherModel.getMain().getTemp();
             windspeed = weatherModel.getWind().getSpeed();
@@ -197,17 +195,23 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
                     break;
             }
             String wind;
-            if (winddeg <= 20 && winddeg >= 340) wind = context.getString(R.string.Nord);
-            else if (winddeg <= 80 && winddeg >= 21)
+            if (winddeg <= 20 && winddeg >= 340) {
+                wind = context.getString(R.string.Nord);
+            } else if (winddeg <= 80 && winddeg >= 21) {
                 wind = context.getString(R.string.NordEast);
-            else if (winddeg <= 100 && winddeg >= 81) wind = context.getString(R.string.East);
-            else if (winddeg >= 101 && winddeg <= 170)
+            } else if (winddeg <= 100 && winddeg >= 81) {
+                wind = context.getString(R.string.East);
+            } else if (winddeg >= 101 && winddeg <= 170) {
                 wind = context.getString(R.string.SouthEast);
-            else if (winddeg <= 190 && winddeg >= 171) wind = context.getString(R.string.South);
-            else if (winddeg <= 260 && winddeg >= 191)
+            } else if (winddeg <= 190 && winddeg >= 171) {
+                wind = context.getString(R.string.South);
+            } else if (winddeg <= 260 && winddeg >= 191) {
                 wind = context.getString(R.string.SouthWest);
-            else if (winddeg >= 261 && winddeg <= 280) wind = context.getString(R.string.West);
-            else wind = context.getString(R.string.NordWest);
+            } else if (winddeg >= 261 && winddeg <= 280) {
+                wind = context.getString(R.string.West);
+            } else {
+                wind = context.getString(R.string.NordWest);
+            }
             windText.setText(wind + " " + Math.round(windspeed) + " m/s" + "\n");
         }
 
@@ -218,6 +222,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
             temperatureText.setTextColor(context.getResources().getColor(colorFont));
             windText.setTextColor(context.getResources().getColor(colorFont));
             imageView_refresh.setVisibility(View.VISIBLE);
+        }
+
+        public void showMessage(String message) {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
         }
 
 

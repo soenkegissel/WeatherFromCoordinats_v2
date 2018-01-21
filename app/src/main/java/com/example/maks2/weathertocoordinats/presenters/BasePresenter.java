@@ -1,21 +1,17 @@
 package com.example.maks2.weathertocoordinats.presenters;
 
 import android.support.annotation.NonNull;
-
 import com.arellomobile.mvp.MvpPresenter;
 import com.arellomobile.mvp.MvpView;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
 
-/**
- * Sorry for this code from Railian Maksym (16.11.2017).
- */
 
 public class BasePresenter<View extends MvpView> extends MvpPresenter<View> {
-    private CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private CompositeDisposable compositeSubscription = new CompositeDisposable();
 
-    protected void unsubscribeOnDestroy(@NonNull Subscription subscription) {
+    void unsubscribeOnDestroy(@NonNull Disposable subscription) {
         compositeSubscription.add(subscription);
     }
 

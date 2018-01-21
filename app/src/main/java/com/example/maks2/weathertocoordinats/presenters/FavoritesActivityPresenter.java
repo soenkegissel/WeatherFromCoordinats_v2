@@ -14,22 +14,21 @@ import com.example.maks2.weathertocoordinats.models.Location;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityView;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subscribers.DefaultSubscriber;
+
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.realm.Realm;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 
-/**
- * Sorry for this code from Railian Maksym (21.11.2017).
- */
+
 @InjectViewState
 public class FavoritesActivityPresenter extends BasePresenter<iFavoritesActivityView> {
     private List<WeatherModel> weatherModelList;
-    Context context;
+    private Context context;
     @Inject
     Realm realm;
     @Inject
@@ -39,28 +38,17 @@ public class FavoritesActivityPresenter extends BasePresenter<iFavoritesActivity
 
     public FavoritesActivityPresenter(Context context) {
         this.context = context;
-        ((MyApplication)context.getApplicationContext()).getAppComponent().inject(this);
+        ((MyApplication) context.getApplicationContext()).getAppComponent().inject(this);
     }
 
     public void getWeatherCeveralCities(String id, String units) {
-        Subscription subscription = networkManager.getWeatherForCeveralCities(id, units, Constants.APP_ID)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Example>() {
-                    @Override
-                    public void onCompleted() {
-                        getViewState().showWeather(weatherModelList);
-                    }
+        Disposable subscription = networkManager.getWeatherForCeveralCities(id, units, Constants.APP_ID)
+                .compose(NetworkManager.applyObservableAsync())
+                .filter(example -> example != null)
+                .subscribe(example -> weatherModelList = example.getList(),
+                        throwable -> getViewState().showMessage(HttpErrorViewManager.convertToText(context, throwable.getLocalizedMessage())),
+                        () -> getViewState().showWeather(weatherModelList));
 
-                    @Override
-                    public void onError(Throwable e) {
-                        getViewState().showMessage(HttpErrorViewManager.convertToText(context,e.getLocalizedMessage()));
-                    }
-
-                    @Override
-                    public void onNext(Example weatherModels) {
-                        weatherModelList = weatherModels.getList();
-                    }
-                });
         unsubscribeOnDestroy(subscription);
     }
 

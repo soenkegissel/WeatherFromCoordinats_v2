@@ -9,9 +9,7 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
-/**
- * Sorry for this code from Railian Maksym (14.11.2017).
- */
+
 
 public class SharedPreferencesManager {
 

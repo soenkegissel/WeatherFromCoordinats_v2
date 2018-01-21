@@ -1,18 +1,12 @@
 package com.example.maks2.weathertocoordinats.managers;
 
-import android.content.Context;
-
 import com.example.maks2.weathertocoordinats.interfaces.iDatabase;
 import com.example.maks2.weathertocoordinats.models.Location;
 
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 
-/**
- * Sorry for this code from Railian Maksym (02.12.2017).
- */
 
 public class RealmDatabaseManager implements iDatabase {
     private Realm realm;

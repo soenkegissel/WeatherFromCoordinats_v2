@@ -6,9 +6,6 @@ import com.example.maks2.weathertocoordinats.models.WeatherModel;
 
 import java.util.List;
 
-/**
- * Sorry for this code from Railian Maksym (21.11.2017).
- */
 
 public interface iFavoritesActivityView extends MvpView {
     void showWeather(List<WeatherModel> weatherModels);
