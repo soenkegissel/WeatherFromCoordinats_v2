@@ -14,14 +14,15 @@ import com.example.maks2.weathertocoordinats.models.Location;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.view_interfaces.iFavoritesActivityView;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subscribers.DefaultSubscriber;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.realm.Realm;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+
 
 @InjectViewState
 public class FavoritesActivityPresenter extends BasePresenter<iFavoritesActivityView> {
@@ -40,24 +41,13 @@ public class FavoritesActivityPresenter extends BasePresenter<iFavoritesActivity
     }
 
     public void getWeatherCeveralCities(String id, String units) {
-        Subscription subscription = networkManager.getWeatherForCeveralCities(id, units, Constants.APP_ID)
-                .compose(NetworkManager.addObservableParameters())
-                .subscribe(new Subscriber<Example>() {
-                    @Override
-                    public void onCompleted() {
-                        getViewState().showWeather(weatherModelList);
-                    }
+        Disposable subscription = networkManager.getWeatherForCeveralCities(id, units, Constants.APP_ID)
+            .filter(example -> example!=null)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(example -> weatherModelList=example.getList(),
+                throwable -> getViewState().showMessage(HttpErrorViewManager.convertToText(context,throwable.getLocalizedMessage())),
+                ()->getViewState().showWeather(weatherModelList));
 
-                    @Override
-                    public void onError(Throwable e) {
-                        getViewState().showMessage(HttpErrorViewManager.convertToText(context,e.getLocalizedMessage()));
-                    }
-
-                    @Override
-                    public void onNext(Example weatherModels) {
-                        weatherModelList = weatherModels.getList();
-                    }
-                });
         unsubscribeOnDestroy(subscription);
     }
 

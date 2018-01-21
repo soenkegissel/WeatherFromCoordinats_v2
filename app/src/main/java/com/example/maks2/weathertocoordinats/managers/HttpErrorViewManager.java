@@ -12,11 +12,19 @@ public class HttpErrorViewManager {
 
     public static String convertToText(Context context,String e) {
         String output;
-        if (e.contains(http400)) output = context.getString(R.string.check_info);
-        else if (e.contains(http404)) output = context.getString(R.string.incorrect_location);
-        else if (e.contains(http500)) output = context.getString(R.string.server_not_respond);
-        else if (e.contains(noInternet)) output = context.getString(R.string.no_internet);
-        else output = e;
-        return output;
+        /*if(e!=null) {*/
+            if (e.contains(http400))
+                output = context.getString(R.string.check_info);
+            else if (e.contains(http404))
+                output = context.getString(R.string.incorrect_location);
+            else if (e.contains(http500))
+                output = context.getString(R.string.server_not_respond);
+            else if (e.contains(noInternet))
+                output = context.getString(R.string.no_internet);
+            else
+                output = e;
+            return output;
+        /*}
+        return "";*/
     }
 }

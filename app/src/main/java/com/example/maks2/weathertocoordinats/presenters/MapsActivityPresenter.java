@@ -13,12 +13,13 @@ import com.example.maks2.weathertocoordinats.models.Location;
 import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.view_interfaces.iMapsActivityView;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subscribers.DefaultSubscriber;
 import javax.inject.Inject;
 
 import io.realm.Realm;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+
 
 @InjectViewState
 public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
@@ -38,56 +39,24 @@ public class MapsActivityPresenter extends BasePresenter<iMapsActivityView> {
   }
 
   public void getWeatherByCoordinates(String lat, String lng, String units) {
-    Subscription getWeatherByCoordinates = networkManager
-        .getWeather(lat, lng, units, Constants.APP_ID)
+    Disposable getWeatherByCoordinates= networkManager.getWeather(lat, lng, units, Constants.APP_ID)
         .filter(weatherModelData -> weatherModelData.getWind().getDeg() != null)
-        .compose(NetworkManager.addObservableParameters())
-        .subscribe(new Subscriber<WeatherModel>() {
-          @Override
-          public void onCompleted() {
-            getViewState().showWeather(weatherModel);
-          }
-
-          @Override
-          public void onError(Throwable e) {
-            getViewState()
-                .showMessage(HttpErrorViewManager.convertToText(context, e.getLocalizedMessage()));
-          }
-
-          @Override
-          public void onNext(WeatherModel weatherModelData) {
-            weatherModel = weatherModelData;
-          }
-
-        });
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(weatherModelData -> weatherModel = weatherModelData,
+            throwable ->getViewState().showMessage(HttpErrorViewManager.convertToText(context, throwable.getLocalizedMessage())),
+            ()->getViewState().showWeather(weatherModel) );
     unsubscribeOnDestroy(getWeatherByCoordinates);
   }
 
   public void getWeatherByName(String name, String units) {
 
-    Subscription getWeatherByName = networkManager
+    Disposable getWeatherByName = networkManager
         .getWeatherByCityName(name, units, Constants.APP_ID)
         .filter(weatherModelData -> weatherModelData.getWind().getDeg() != null)
-        .compose(NetworkManager.addObservableParameters())
-        .subscribe(new Subscriber<WeatherModel>() {
-          @Override
-          public void onCompleted() {
-            getViewState().showWeather(weatherModel);
-          }
-
-          @Override
-          public void onError(Throwable e) {
-            Toast.makeText(context,
-                HttpErrorViewManager.convertToText(context, e.getLocalizedMessage()),
-                Toast.LENGTH_SHORT).show();
-          }
-
-          @Override
-          public void onNext(WeatherModel weatherModelData) {
-            weatherModel = weatherModelData;
-          }
-        });
-
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(weatherModelData -> weatherModel = weatherModelData,
+            throwable ->getViewState().showMessage(HttpErrorViewManager.convertToText(context, throwable.getLocalizedMessage())),
+            ()->getViewState().showWeather(weatherModel) );
     unsubscribeOnDestroy(getWeatherByName);
   }
 

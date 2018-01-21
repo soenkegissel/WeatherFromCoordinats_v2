@@ -21,16 +21,15 @@ import com.example.maks2.weathertocoordinats.models.WeatherModel;
 import com.example.maks2.weathertocoordinats.ui.BaseActivity;
 import com.squareup.picasso.Picasso;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+
+
 
 /**
  * Sorry for this code from Railian Maksym (21.11.2017).
@@ -68,28 +67,17 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
   public void onBindViewHolder(FavoritesViewHolder holder, int position) {
     holder.showWeather(weatherModelList.get(position));
     holder.imageView_refresh.setOnClickListener(view -> {
-      Subscription refreshWeather = networkManager.getWeatherByCityName(
+      Disposable refreshWeather = networkManager.getWeatherByCityName(
           weatherModelList.get(position).getName() + "," + weatherModelList.get(position).getSys()
               .getCountry().toLowerCase(), units, Constants.APP_ID)
-          .compose(NetworkManager.addObservableParameters())
-          .subscribe(new Subscriber<WeatherModel>() {
-            @Override
-            public void onCompleted() {
-              holder.showWeather(refreshedWeather);
-            }
+         // .compose(NetworkManager.<WeatherModel>applyObservableAsync())
+          .filter(weatherModelData -> weatherModelData.getWind().getDeg() != null)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(weatherModel -> refreshedWeather=weatherModel,
+              throwable ->HttpErrorViewManager.convertToText(context, throwable.getLocalizedMessage()),
+              ()->holder.showWeather(refreshedWeather));
 
-            @Override
-            public void onError(Throwable e) {
-              holder.showMessage(
-                  HttpErrorViewManager.convertToText(context, e.getLocalizedMessage()));
-            }
-
-            @Override
-            public void onNext(WeatherModel weatherModel) {
-              refreshedWeather = weatherModel;
-            }
-          });
-      refreshWeather.unsubscribe();
+      refreshWeather.dispose();
     });
 
   }
