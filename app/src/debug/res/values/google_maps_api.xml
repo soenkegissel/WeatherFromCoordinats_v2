@@ -4,7 +4,7 @@
 
     To get one, follow this link, follow the directions and press "Create" at the end:
 
-    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=CF:72:DC:A7:51:B9:5B:A7:A7:66:7D:39:55:A7:A3:46:00:15:F0:7B%3Bcom.example.maks2.weathertocoordinats
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=CF:72:DC:A7:51:B9:5B:A7:A7:66:7D:39:55:A7:A3:46:00:15:F0:7B%3Bcom.rucksack.weathermaps
 
     You can also add your credentials to an existing key, using these values:
 

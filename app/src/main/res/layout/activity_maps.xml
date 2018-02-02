@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"
-            tools:context="com.example.maks2.weathertocoordinats.ui.activity.MapsActivity" />
+            tools:context="com.rucksack.weathermaps.ui.activity.MapsActivity" />
 
     </RelativeLayout>
 

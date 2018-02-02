@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">WeatherToCoordinats</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="MapsApiKey">AIzaSyC1Yf65opdj0C82EarUYP94z3gBuP5F1dE</string>
+    <string name="app_name">WeatherMaps</string>
+    <string name="title_activity_maps">WeatherMaps</string>
+    <string name="MapsApiKey">AIzaSyCKtSwUraPtDzr5Z11KRI66tS3nwbuiiVA</string>
     <string name="ServiceUnreachable">Weather service unreachable, please check your connection</string>
     <string name="WhereIsIt">Where is it:</string>
     <string name="Weather">Weather in generally:</string>
